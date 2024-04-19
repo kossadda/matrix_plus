@@ -176,7 +176,7 @@ $(REPORT_DIR):
 #=============================== CHECKS TARGETS ===============================#
 kek:
 	@$(CXX) -Wall -Wextra -pedantic -g -std=c++17 ./debug/debug.cpp $(MODULES_CPP) -o deb
-	./deb
+	@./deb
 
 clang_check:
 	clang-format -style=Google -n $(ALL_FILES)

@@ -30,10 +30,15 @@ class S21Matrix {
   enum Status { NO, YES };
   void FillMatrix(double* values);
   void MatrixPrint();
-  void operator=(const S21Matrix& other);
+  bool EqMatrix(const S21Matrix& other);
   void SumMatrix(const S21Matrix& other);
-  S21Matrix operator+(const S21Matrix& other);
   void SubMatrix(const S21Matrix& other);
+  S21Matrix operator+(const S21Matrix& other);
+  S21Matrix operator-(const S21Matrix& other);
+  void operator+=(const S21Matrix& other);
+  void operator-=(const S21Matrix& other);
+  bool operator==(const S21Matrix& other);
+  void operator=(const S21Matrix& other);
 };
 
 #endif  // MYCLASS_H

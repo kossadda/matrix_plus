@@ -168,6 +168,32 @@ void S21Matrix::SubMatrix(const S21Matrix& other)
   }
 }
 
+bool S21Matrix::EqMatrix(const S21Matrix& other)
+{
+  bool status = YES;
+
+  if(ValidEqualSize(other) && !IsNanOrInf() && !other.IsNanOrInf()) {
+    for (int i = 0; i < rows_; i++) {
+      for (int j = 0; j < cols_; j++) {
+        if(matrix_[i][j] != other.matrix_[i][j]) {
+          status = NO;
+          i = rows_;
+          j = cols_;
+        }
+      }
+    }
+  }
+
+  return status;
+}
+
+bool S21Matrix::operator==(const S21Matrix& other)
+{
+  bool status = EqMatrix(other);
+
+  return status;
+}
+
 S21Matrix S21Matrix::operator+(const S21Matrix& other)
 {
   S21Matrix result(*this);
@@ -176,20 +202,40 @@ S21Matrix S21Matrix::operator+(const S21Matrix& other)
   return result;
 }
 
+S21Matrix S21Matrix::operator-(const S21Matrix& other)
+{
+  S21Matrix result(*this);
+  result.SubMatrix(other);
+
+  return result;
+}
+
+void S21Matrix::operator+=(const S21Matrix& other)
+{
+  SumMatrix(other);
+}
+
+void S21Matrix::operator-=(const S21Matrix& other)
+{
+  SubMatrix(other);
+}
+
 void S21Matrix::operator=(const S21Matrix& other)
 {
   Status status = YES;
 
   if(this != &other && other.rows_ > 0 && other.cols_ > 0) {
-    for (int i = 0; i < rows_; i++) {
-      if (matrix_[i]) {
-        delete[] matrix_[i];
-        matrix_[i] = NULL;
+    if(matrix_) {
+      for (int i = 0; i < rows_; i++) {
+        if (matrix_[i]) {
+          delete[] matrix_[i];
+          matrix_[i] = NULL;
+        }
       }
-    }
 
-    delete[] matrix_;
-    matrix_ = NULL;
+      delete[] matrix_;
+      matrix_ = NULL;
+    }
 
     this->rows_ = other.rows_;
     this->cols_ = other.cols_;
