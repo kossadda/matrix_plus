@@ -16,8 +16,10 @@ int main()
   S21Matrix first(4, 4);
   S21Matrix second(4, 4);
   double init[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16};
+  double init2[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16};
   first.FillMatrix(init);
-  second.FillMatrix(init);
-  first.SumMatrix(second);
-  first.MatrixPrint();
+  second.FillMatrix(init2);
+  S21Matrix result;
+  result = first + second;
+  result.MatrixPrint();
 }
