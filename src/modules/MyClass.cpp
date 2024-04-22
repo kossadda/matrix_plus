@@ -11,79 +11,43 @@
 
 #include "./include/MyClass.h"
 
-S21Matrix::S21Matrix()
+S21Matrix::S21Matrix() : rows_(3), cols_(3)
 {
-  this->rows_ = 0;
-  this->cols_ = 0;
-  this->matrix_ = NULL;
+  Allocate();
 }
 
-S21Matrix::S21Matrix(int rows, int cols)
+S21Matrix::S21Matrix(int rows, int cols) : rows_(rows), cols_(cols)
 {
-  Status status = YES;
-
-  if (rows > 0 && cols > 0) {
-    this->rows_ = rows;
-    this->cols_ = cols;
-    this->matrix_ = new double*[rows_];
-
-    if (matrix_) {
-      for (int i = 0; i < rows_; i++) {
-        matrix_[i] = new double[cols_]();
-
-        if (!matrix_[i]) {
-          status = NO;
-        }
-      }
-    } else {
-      status = NO;
-    }
-  } else {
-    status = NO;
-  }
-
-  if (status == NO) {
-    std::cerr << "Matrix construct: error while allocating memory" << std::endl;
-  }
-}
-
-S21Matrix::S21Matrix(const S21Matrix& other)
-{
-  Status status = YES;
-
-  if (other.rows_ > 0 && other.cols_ > 0) {
-    this->rows_ = other.rows_;
-    this->cols_ = other.cols_;
-    this->matrix_ = new double*[rows_];
-
-    if (matrix_) {
-      for (int i = 0; i < rows_; i++) {
-        matrix_[i] = new double[cols_]();
-
-        if (!matrix_[i]) {
-          status = NO;
-        }
-      }
-    } else {
-      status = NO;
-    }
-  } else {
-    status = NO;
-  }
-
-  if (status == NO) {
-    std::cerr << "Matrix construct: error while allocating memory" << std::endl;
-  } else {
-    for(int i = 0; i < rows_; i++) {
-      for(int j = 0; j < cols_; j++) {
-        matrix_[i][j] = other.matrix_[i][j];
-      }
-    }
-  }
+  Allocate();
 }
 
 S21Matrix::~S21Matrix()
 {
+  Remove();
+}
+
+S21Matrix::S21Matrix(const S21Matrix& other)
+{
+  if (other.rows_ > 0 && other.cols_ > 0) {
+    this->rows_ = other.rows_;
+    this->cols_ = other.cols_;
+    Allocate();
+    CopyValues(other);
+  }
+}
+
+void S21Matrix::Allocate()
+{
+  if(rows_ && cols_) {
+    matrix_ = new double*[rows_];
+
+    for (int i = 0; i < rows_; i++) {
+      matrix_[i] = new double[cols_];
+    }
+  }
+}
+
+void S21Matrix::Remove() {
   if (matrix_) {
     for (int i = 0; i < rows_; i++) {
       if (matrix_[i]) {
@@ -94,6 +58,15 @@ S21Matrix::~S21Matrix()
 
     delete[] matrix_;
     matrix_ = NULL;
+  }
+}
+
+void S21Matrix::CopyValues(const S21Matrix& other)
+{
+  for(int i = 0; i < rows_; i++) {
+    for(int j = 0; j < cols_; j++) {
+      matrix_[i][j] = other.matrix_[i][j];
+    }
   }
 }
 
@@ -150,8 +123,6 @@ void S21Matrix::SumMatrix(const S21Matrix& other)
         matrix_[i][j] += other.matrix_[i][j];
       }
     }
-  } else {
-    std::cerr << "SumMatrix: invalid data" << std::endl;
   }
 }
 
@@ -163,8 +134,6 @@ void S21Matrix::SubMatrix(const S21Matrix& other)
         matrix_[i][j] -= other.matrix_[i][j];
       }
     }
-  } else {
-    std::cerr << "SumMatrix: invalid data" << std::endl;
   }
 }
 
@@ -182,6 +151,8 @@ bool S21Matrix::EqMatrix(const S21Matrix& other)
         }
       }
     }
+  } else {
+    status = NO;
   }
 
   return status;
@@ -222,45 +193,12 @@ void S21Matrix::operator-=(const S21Matrix& other)
 
 void S21Matrix::operator=(const S21Matrix& other)
 {
-  Status status = YES;
-
   if(this != &other && other.rows_ > 0 && other.cols_ > 0) {
-    if(matrix_) {
-      for (int i = 0; i < rows_; i++) {
-        if (matrix_[i]) {
-          delete[] matrix_[i];
-          matrix_[i] = NULL;
-        }
-      }
+    Remove();
 
-      delete[] matrix_;
-      matrix_ = NULL;
-    }
-
-    this->rows_ = other.rows_;
-    this->cols_ = other.cols_;
-    this->matrix_ = new double*[rows_];
-
-    if (matrix_) {
-      for (int i = 0; i < rows_; i++) {
-        matrix_[i] = new double[cols_]();
-
-        if (!matrix_[i]) {
-          status = NO;
-        }
-      }
-    } else {
-      status = NO;
-    }
-
-    if (status == NO) {
-      std::cerr << "Matrix construct: error while allocating memory" << std::endl;
-    } else {
-      for(int i = 0; i < rows_; i++) {
-        for(int j = 0; j < cols_; j++) {
-          matrix_[i][j] = other.matrix_[i][j];
-        }
-      }
-    }
+    rows_ = other.rows_;
+    cols_ = other.cols_;
+    Allocate();
+    CopyValues(other);
   }
 }

@@ -21,7 +21,9 @@ class S21Matrix {
   double** matrix_;
   bool ValidEqualSize(const S21Matrix& other) const;
   bool IsNanOrInf() const;
-
+  void Allocate();
+  void Remove();
+  void CopyValues(const S21Matrix& other);
  public:
   S21Matrix(int rows, int cols);
   S21Matrix(const S21Matrix& other);
