@@ -9,25 +9,17 @@
  *
  */
 
-#include "./include/MyClass.h"
+#include "./include/Matrix.h"
 
-S21Matrix::S21Matrix() : rows_(3), cols_(3)
-{
+S21Matrix::S21Matrix() : rows_(3), cols_(3) { Allocate(); }
+
+S21Matrix::S21Matrix(int rows, int cols) : rows_(rows), cols_(cols) {
   Allocate();
 }
 
-S21Matrix::S21Matrix(int rows, int cols) : rows_(rows), cols_(cols)
-{
-  Allocate();
-}
+S21Matrix::~S21Matrix() { Remove(); }
 
-S21Matrix::~S21Matrix()
-{
-  Remove();
-}
-
-S21Matrix::S21Matrix(const S21Matrix& other)
-{
+S21Matrix::S21Matrix(const S21Matrix& other) {
   if (other.rows_ > 0 && other.cols_ > 0) {
     this->rows_ = other.rows_;
     this->cols_ = other.cols_;
@@ -36,9 +28,8 @@ S21Matrix::S21Matrix(const S21Matrix& other)
   }
 }
 
-void S21Matrix::Allocate()
-{
-  if(rows_ && cols_) {
+void S21Matrix::Allocate() {
+  if (rows_ && cols_) {
     matrix_ = new double*[rows_];
 
     for (int i = 0; i < rows_; i++) {
@@ -61,17 +52,15 @@ void S21Matrix::Remove() {
   }
 }
 
-void S21Matrix::CopyValues(const S21Matrix& other)
-{
-  for(int i = 0; i < rows_; i++) {
-    for(int j = 0; j < cols_; j++) {
+void S21Matrix::CopyValues(const S21Matrix& other) {
+  for (int i = 0; i < rows_; i++) {
+    for (int j = 0; j < cols_; j++) {
       matrix_[i][j] = other.matrix_[i][j];
     }
   }
 }
 
-void S21Matrix::MatrixPrint()
-{
+void S21Matrix::MatrixPrint() {
   if (rows_ && cols_) {
     for (int i = 0; i < rows_; i++) {
       for (int j = 0; j < cols_; j++) {
@@ -83,8 +72,7 @@ void S21Matrix::MatrixPrint()
   }
 }
 
-void S21Matrix::FillMatrix(double* values)
-{
+void S21Matrix::FillMatrix(double* values) {
   for (int i = 0, cnt = 0; i < rows_; i++) {
     for (int j = 0; j < cols_; j++) {
       matrix_[i][j] = values[cnt++];
@@ -92,8 +80,7 @@ void S21Matrix::FillMatrix(double* values)
   }
 }
 
-bool S21Matrix::IsNanOrInf() const
-{
+bool S21Matrix::IsNanOrInf() const {
   bool check = NO;
 
   for (int i = 0; i < rows_; i++) {
@@ -109,14 +96,12 @@ bool S21Matrix::IsNanOrInf() const
   return check;
 }
 
-bool S21Matrix::ValidEqualSize(const S21Matrix& other) const
-{
+bool S21Matrix::ValidEqualSize(const S21Matrix& other) const {
   return (rows_ == other.rows_ && cols_ == other.cols_ && rows_ && cols_) ? YES
                                                                           : NO;
 }
 
-void S21Matrix::SumMatrix(const S21Matrix& other)
-{
+void S21Matrix::SumMatrix(const S21Matrix& other) {
   if (ValidEqualSize(other) && !IsNanOrInf() && !other.IsNanOrInf()) {
     for (int i = 0; i < rows_; i++) {
       for (int j = 0; j < cols_; j++) {
@@ -126,8 +111,7 @@ void S21Matrix::SumMatrix(const S21Matrix& other)
   }
 }
 
-void S21Matrix::SubMatrix(const S21Matrix& other)
-{
+void S21Matrix::SubMatrix(const S21Matrix& other) {
   if (ValidEqualSize(other) && !IsNanOrInf() && !other.IsNanOrInf()) {
     for (int i = 0; i < rows_; i++) {
       for (int j = 0; j < cols_; j++) {
@@ -137,14 +121,13 @@ void S21Matrix::SubMatrix(const S21Matrix& other)
   }
 }
 
-bool S21Matrix::EqMatrix(const S21Matrix& other)
-{
+bool S21Matrix::EqMatrix(const S21Matrix& other) {
   bool status = YES;
 
-  if(ValidEqualSize(other) && !IsNanOrInf() && !other.IsNanOrInf()) {
+  if (ValidEqualSize(other) && !IsNanOrInf() && !other.IsNanOrInf()) {
     for (int i = 0; i < rows_; i++) {
       for (int j = 0; j < cols_; j++) {
-        if(matrix_[i][j] != other.matrix_[i][j]) {
+        if (std::abs(matrix_[i][j] - other.matrix_[i][j]) > 0.01) {
           status = NO;
           i = rows_;
           j = cols_;
@@ -158,42 +141,30 @@ bool S21Matrix::EqMatrix(const S21Matrix& other)
   return status;
 }
 
-bool S21Matrix::operator==(const S21Matrix& other)
-{
-  bool status = EqMatrix(other);
+bool S21Matrix::operator==(const S21Matrix& other) { return EqMatrix(other); }
 
-  return status;
-}
+bool S21Matrix::operator!=(const S21Matrix& other) { return !EqMatrix(other); }
 
-S21Matrix S21Matrix::operator+(const S21Matrix& other)
-{
+S21Matrix S21Matrix::operator+(const S21Matrix& other) {
   S21Matrix result(*this);
   result.SumMatrix(other);
 
   return result;
 }
 
-S21Matrix S21Matrix::operator-(const S21Matrix& other)
-{
+S21Matrix S21Matrix::operator-(const S21Matrix& other) {
   S21Matrix result(*this);
   result.SubMatrix(other);
 
   return result;
 }
 
-void S21Matrix::operator+=(const S21Matrix& other)
-{
-  SumMatrix(other);
-}
+void S21Matrix::operator+=(const S21Matrix& other) { SumMatrix(other); }
 
-void S21Matrix::operator-=(const S21Matrix& other)
-{
-  SubMatrix(other);
-}
+void S21Matrix::operator-=(const S21Matrix& other) { SubMatrix(other); }
 
-void S21Matrix::operator=(const S21Matrix& other)
-{
-  if(this != &other && other.rows_ > 0 && other.cols_ > 0) {
+void S21Matrix::operator=(const S21Matrix& other) {
+  if (this != &other && other.rows_ > 0 && other.cols_ > 0) {
     Remove();
 
     rows_ = other.rows_;

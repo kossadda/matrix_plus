@@ -44,7 +44,7 @@ CXXFLAGS = -Wall -Werror -Wextra -pedantic -g -std=c++17
 OPTIMIZE = -O2
 
 # CHECK LIBRARIES FOR LINKING
-LDFLAGS = -lcheck -lsubunit -lm
+LDFLAGS = -lgtest -lgtest_main
 
 # CHECK & GCOV LIBRARIES FOR LINKING GCOV
 LDGCOV = $(LDFLAGS) -lgcov
@@ -86,7 +86,7 @@ TEST_DIRS = $(shell find $(TEST_DIR) -type d)
 TEST_CPP = $(shell find $(TEST_DIR) -type f -name "*.cpp")
 TEST_H = $(shell find $(TEST_DIR) -type f -name "*.h")
 TEST_O = $(notdir $(TEST_CPP:%.cpp=%.o))
-TEST_OBJ_PATH = $(OBJ_DIR)/*_test.o
+TEST_OBJ_PATH = $(OBJ_DIR)/*Test.o
 EXCLUDE = $(filter-out $(wildcard $(MODULES_DIR)/debug/*),$(MODULES_CPP))
 #==============================================================================#
 
@@ -125,7 +125,7 @@ $(LIBRARY): $(OBJ_DIR) $(MODULES_O) $(MODULES_H) $(MAIN_H)
 	ranlib $@
 
 .PHONY: $(TARGET)
-$(TARGET): $(OBJ_DIR) $(TEST_O)
+$(TARGET): $(LIBRARY) $(OBJ_DIR) $(TEST_O)
 	$(CXX) $(TEST_OBJ_PATH) $(LIBRARY) $(LDFLAGS) -o $@
 	-./$@
 
@@ -168,15 +168,15 @@ $(REPORT_DIR):
 %.o: %.cpp ${MODULES_H}
 	$(CXX) $(CXXFLAGS) $(OPTIMIZE) -c -o $(addprefix ${OBJ_DIR}/, $@) $<
 
-%_test.o:
+%Test.o: %Test.cpp
 	$(CXX) $(CXXFLAGS) -c -o $(addprefix ${OBJ_DIR}/, $@) $<
 #==============================================================================#
 
 
 #=============================== CHECKS TARGETS ===============================#
 kek:
-	@$(CXX) -Wall -Wextra -pedantic -g -std=c++17 ./debug/debug.cpp $(MODULES_CPP) -o deb
-	@./deb
+	@$(CXX) -Wall -Wextra -pedantic -g -std=c++17 ./debug/Debug.cpp $(MODULES_CPP) -o test
+	@./test
 
 clang_check:
 	clang-format -style=Google -n $(ALL_FILES)
