@@ -1,28 +1,41 @@
 /**
  * @file MainTest.cpp
  * @author kossadda (https://github.com/kossadda)
- * @brief main module that runs testing
+ * @brief Main module that runs testing
  * @version 1.0
  * @date 2024-04-23
- * 
+ *
  * @copyright Copyright (c) 2024
- * 
+ *
  */
 
 #include "./MainTest.h"
 
-int main(int argc, char **argv) {
+/**
+ * @brief Main running testing
+ *
+ * @param[in] argc number of arguments supplied
+ * @param[in] argv array of arguments
+ * @return int - overall test result
+ */
+int main(int argc, char** argv) {
   ::testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();
 }
 
-std::string Print(S21Matrix& m, int mode)
-{
+/**
+ * @brief For error handling. Prints the matrix given as input
+ *
+ * @param m - matrix
+ * @param mode - what matrix is given. 0 - counted, 1 - expected
+ * @return std::string - outputting a matrix as a string
+ */
+std::string Print(S21Matrix& m, int mode) {
   std::ostringstream os;
 
   os << ((!mode) ? "  Actual: " : "Expected: ");
-  for(int i = 0; i < m.GetRows(); i++) {
-    for(int j = 0; j < m.GetCols(); j++) {
+  for (int i = 0; i < m.GetRows(); i++) {
+    for (int j = 0; j < m.GetCols(); j++) {
       os << m.GetCell(i, j) << " ";
     }
   }
