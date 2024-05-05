@@ -1,12 +1,12 @@
 ################################################################################
-#                       _        _                       _                     #
-#                      | |      (_)                     | |                    #
-#       _ __ ___   __ _| |_ _ __ ___  __           _ __ | |_   _ ___           #
-#      | '_ ` _ \ / _` | __| '__| \ \/ /          | '_ \| | | | / __|          #
-#      | | | | | | (_| | |_| |  | |>  <   ______  | |_) | | |_| \__ \          #
-#      |_| |_| |_|\__,_|\__|_|  |_/_/\_\ |______| | .__/|_|\__,_|___/          #
-#                                                 | |                          #
-#                                                 |_|                          #
+#  ____       _      _     _____                                  __     ___   #
+# |  _ \     (_)    | |   / ____|                                /_ |   / _ \  #
+# | |_) |_ __ _  ___| | _| |  __  __ _ _ __ ___   ___     __   __ | |  | | | | #
+# |  _ <| '__| |/ __| |/ / | |_ |/ _` | '_ ` _ \ / _ \    \ \ / / | |  | | | | #
+# | |_) | |  | | (__|   <| |__| | (_| | | | | | |  __/     \ V /  | | _| |_| | #
+# |____/|_|  |_|\___|_|\_\\_____|\__,_|_| |_| |_|\___| ____ \_/   |_|(_)\___/  #
+#                                                     |____|                   #
+#                                                                              #
 ################################################################################
 
 
@@ -40,13 +40,10 @@ DVI_DIR = ./../docs
 # MAIN FLAGS FOR COMPILER
 CXXFLAGS = -Wall -Werror -Wextra -pedantic -g -std=c++17
 
-# OPTIMIZATION
-OPTIMIZE = -O2
-
-# CHECK LIBRARIES FOR LINKING
+# CHECK LIBRARY FOR LINKING
 LDFLAGS = -lgtest -lgtest_main
 
-# CHECK & GCOV LIBRARIES FOR LINKING GCOV
+# CHECK & GCOV LIBRARY FOR LINKING
 LDGCOV = $(LDFLAGS) -lgcov
 
 # FLAGS FOR COVERING MODULES
@@ -92,9 +89,9 @@ EXCLUDE = $(filter-out $(wildcard $(MODULES_DIR)/debug/*),$(MODULES_CPP))
 
 
 #================= LIST OF FILES TO CLANG-FORMAT AND CPPCHECK =================#
-C_FILES = $(MODULES_CPP) $(TEST_CPP)
+CPP_FILES = $(MODULES_CPP) $(TEST_CPP)
 H_FILES = $(MODULES_H) $(MAIN_H) $(TEST_H)
-ALL_FILES = $(C_FILES) $(H_FILES)
+ALL_FILES = $(CPP_FILES) $(H_FILES)
 #==============================================================================#
 
 
@@ -117,21 +114,21 @@ vpath %.o $(OBJ_DIR)
 
 
 #================================= MAIN TARGETS ===============================#
-all: $(TARGET) dvi
+.PHONY: $(LIBRARY) $(TARGET) $(GCOV)
 
-.PHONY: $(LIBRARY)
+all: $(LIBRARY) dvi
+
 $(LIBRARY): $(OBJ_DIR) $(MODULES_O) $(MODULES_H) $(MAIN_H)
-	ar rcs $@ $(MODULES_OBJ_PATH)
-	ranlib $@
+	@ar rcs $@ $(MODULES_OBJ_PATH)
+	@ranlib $@
 
-.PHONY: $(TARGET)
 $(TARGET): $(LIBRARY) $(OBJ_DIR) $(TEST_O)
-	$(CXX) $(TEST_OBJ_PATH) $(LIBRARY) $(LDFLAGS) -o $@
-	-./$@
+	@$(CXX) $(TEST_OBJ_PATH) $(LIBRARY) $(LDFLAGS) -o $@
+	@-./$@
 
 $(GCOV): $(OBJ_DIR) $(REPORT_DIR) $(TEST_O)
 	$(CXX) $(TEST_OBJ_PATH) $(EXCLUDE) $(LDFLAGS) $(GCOV_FLAGS) -o $(addprefix $(OBJ_DIR)/, $(TARGET))
-	-./$(addprefix $(OBJ_DIR)/, $(TARGET))
+	./$(addprefix $(OBJ_DIR)/, $(TARGET))
 	gcovr -r . --html --html-details -o $(REPORT_DIR)/coverage.html
 	xdg-open $(REPORT_DIR)/coverage.html
 
@@ -141,15 +138,14 @@ dvi:
 	xdg-open $(DVI_DIR)/html/index.html
 
 clean:
-	rm -rf $(OBJ_DIR)
-	rm -rf $(REPORT_DIR)
-	rm -rf $(DVI_DIR)
-	rm -rf $(GCOV)
-	rm -f $(TARGET)
-	rm -f *.a *.o
-	rm -f *.gc*
-	rm -f main
-	rm -f val.txt
+	@rm -rf $(OBJ_DIR)
+	@rm -rf $(REPORT_DIR)
+	@rm -rf $(DVI_DIR)
+	@rm -rf $(GCOV)
+	@rm -f $(TARGET)
+	@rm -f *.a *.o
+	@rm -f *.gc*
+	@rm -f val.txt
 
 rebuild: clean all
 #==============================================================================#
@@ -157,10 +153,10 @@ rebuild: clean all
 
 #============================== CREATE DIRECTORIES ============================#
 $(OBJ_DIR):
-	mkdir -p ${OBJ_DIR}
+	@mkdir -p $(OBJ_DIR)
 
 $(REPORT_DIR):
-	mkdir -p $(REPORT_DIR)
+	@mkdir -p $(REPORT_DIR)
 #==============================================================================#
 
 
@@ -174,18 +170,11 @@ $(REPORT_DIR):
 
 
 #=============================== CHECKS TARGETS ===============================#
-kek:
-	@$(CXX) -Wall -Wextra -pedantic -g -std=c++17 ./debug/Debug.cpp $(MODULES_CPP) -o test
-	@./test
-
 clang_check:
 	clang-format -style=Google -n $(ALL_FILES)
 
-clang_fix:
-	clang-format -style=Google -i $(ALL_FILES)
-
 cppcheck:
-	$@ $(CPPCHECK) $(MODULES_CPP) $(MODULES_H)
+	$@ $(CPPCHECK) $(MODULES_C) $(MODULES_H)
 
 valgrind: $(TARGET)
 	@printf '\033[1;33m\n\t\t\t\t                   _            _           _   _            _   _             \n'
@@ -202,7 +191,7 @@ valgrind: $(TARGET)
 		printf "\033[1;33m\n"; \
 		printf "###########################################################################################################################################################\n\n"; \
 		printf "                                                                 Valgrind test results:\n"; \
-		printf "                                                             Passed tests $$(grep "ERROR SUMMARY: 0" -c val.txt) from $$(grep "ERROR SUMMARY:" -c val.txt)\n\n"; \
+		printf "                                                                Passed tests $$(grep "ERROR SUMMARY: 0" -c val.txt) from $$(grep "ERROR SUMMARY:" -c val.txt)\n\n"; \
 		printf "###########################################################################################################################################################\n"; \
 		printf "\033[0m\n"; \
 	}
@@ -210,10 +199,18 @@ valgrind: $(TARGET)
 
 
 #============================= ADDITIONAL TARGETS =============================#
+kek:
+	clear
+	@$(CXX) -Wall -Wextra -pedantic -g -std=c++17 ./debug/Debug.cpp $(MODULES_CPP) -o test
+	@valgrind $(VAL) ./test
+
+clang_fix:
+	clang-format -style=Google -i $(ALL_FILES)
+
 dependencies:
 	sudo apt install cppcheck
 	sudo apt install clang-format
-	sudo apt-get install check
+	sudo apt-get install libgtest-dev
 	sudo apt install doxygen
 	sudo apt-get install graphviz
 	sudo apt-get install texlive

@@ -1,5 +1,5 @@
 /**
- * @file MyClass.h
+ * @file Matrix.h
  * @author kossadda (https://github.com/kossadda)
  * @brief Header for the S21Matrix class
  * @version 1.0
@@ -12,40 +12,43 @@
 #ifndef MATRIX_H
 #define MATRIX_H
 
+#define DEFAULT 3
+#define PRECISION 1.0e-6
+
+#include <algorithm>
 #include <cmath>
 #include <iostream>
 
 class S21Matrix {
  private:
   int rows_, cols_;
-  double** matrix_;
-  bool ValidEqualSize(const S21Matrix& other) const;
-  bool IsNanOrInf() const;
-  void Allocate();
+  double* matrix_;
+  bool IsCorrect() const;
+  bool CompareIsRight(const S21Matrix& other) const;
+  double* Alloc();
   void Remove();
-  void CopyValues(const S21Matrix& other);
+  enum Status { NO, YES };
 
  public:
-  S21Matrix(int rows, int cols);
+  S21Matrix(int r, int c);
   S21Matrix(const S21Matrix& other);
   S21Matrix();
   ~S21Matrix();
-  enum Status { NO, YES };
-  void FillMatrix(const double* values);
-  void MatrixPrint() const;
+  void Fill(const double* values);
+  void Print() const;
   int GetRows() const { return rows_; };
   int GetCols() const { return cols_; };
-  double GetCell(int row, int col) const { return matrix_[row][col]; };
+  double GetCell(const int row, const int col) const;
   bool EqMatrix(const S21Matrix& other) const;
-  void SumMatrix(const S21Matrix& other);
-  void SubMatrix(const S21Matrix& other);
-  S21Matrix operator+(const S21Matrix& other) const;
-  S21Matrix operator-(const S21Matrix& other) const;
-  void operator+=(const S21Matrix& other);
-  void operator-=(const S21Matrix& other);
   bool operator==(const S21Matrix& other) const;
   bool operator!=(const S21Matrix& other) const;
   void operator=(const S21Matrix& other);
+  // void SumMatrix(const S21Matrix& other);
+  // void SubMatrix(const S21Matrix& other);
+  // S21Matrix operator+(const S21Matrix& other) const;
+  // S21Matrix operator-(const S21Matrix& other) const;
+  // void operator+=(const S21Matrix& other);
+  // void operator-=(const S21Matrix& other);
 };
 
 #endif  // MATRIX_H

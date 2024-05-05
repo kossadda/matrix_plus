@@ -1,5 +1,5 @@
 /**
- * @file MyClass.cpp
+ * @file Matrix.cpp
  * @author kossadda (https://github.com/kossadda)
  * @brief Module containing descriptions of S21Matrix class methods
  * @version 1.0
@@ -12,7 +12,7 @@
 #include "./include/Matrix.h"
 
 /// @brief Default constructor (creates a 3x3 matrix)
-S21Matrix::S21Matrix() : rows_(3), cols_(3) { Allocate(); }
+S21Matrix::S21Matrix() : rows_(DEFAULT), cols_(DEFAULT), matrix_(Alloc()) {}
 
 /**
  * @brief Parameterized constructor
@@ -20,9 +20,7 @@ S21Matrix::S21Matrix() : rows_(3), cols_(3) { Allocate(); }
  * @param[in] rows number of matrix rows
  * @param[in] cols number of matrix columns
  */
-S21Matrix::S21Matrix(int rows, int cols) : rows_(rows), cols_(cols) {
-  Allocate();
-}
+S21Matrix::S21Matrix(int r, int c) : rows_(r), cols_(c), matrix_(Alloc()) {}
 
 /// @brief Destructor
 S21Matrix::~S21Matrix() { Remove(); }
@@ -32,65 +30,65 @@ S21Matrix::~S21Matrix() { Remove(); }
  *
  * @param[in] other Object to be copied
  */
-S21Matrix::S21Matrix(const S21Matrix& other) {
-  if (other.rows_ > 0 && other.cols_ > 0) {
-    this->rows_ = other.rows_;
-    this->cols_ = other.cols_;
-    Allocate();
-    CopyValues(other);
-  }
+S21Matrix::S21Matrix(const S21Matrix& other)
+    : rows_(other.rows_), cols_(other.cols_), matrix_(Alloc()) {
+  std::copy(other.matrix_, other.matrix_ + rows_ * cols_, matrix_);
 }
 
 /// @brief Allocates memory for a matrix with the current fields rows_ and cols_
-void S21Matrix::Allocate() {
-  if (rows_ && cols_) {
-    matrix_ = new double*[rows_];
+double* S21Matrix::Alloc() {
+  if (rows_ <= 0 || cols_ <= 0)
+    throw std::invalid_argument("Constructor: invalid matrix size");
 
-    for (int i = 0; i < rows_; i++) {
-      matrix_[i] = new double[cols_];
-    }
+  try {
+    return new double[rows_ * cols_]{};
+  } catch (const std::bad_alloc& e) {
+    throw std::runtime_error("Memory allocation failed");
   }
 }
 
 /// @brief Clears the memory allocated in field matrix_
 void S21Matrix::Remove() {
   if (matrix_) {
-    for (int i = 0; i < rows_; i++) {
-      if (matrix_[i]) {
-        delete[] matrix_[i];
-        matrix_[i] = NULL;
-      }
-    }
-
     delete[] matrix_;
-    matrix_ = NULL;
+    matrix_ = nullptr;
   }
+  rows_ = 0;
+  cols_ = 0;
 }
 
 /**
- * @brief Copies values from the given matrix to the current one
+ * @brief Checks the validity of the matrix
  *
- * @param[in] other data to be copied
+ * @retval NO (false) - if wrong size or matrix contains nan or inf values
+ * @retval YES (true) - correct matrix
  */
-void S21Matrix::CopyValues(const S21Matrix& other) {
-  for (int i = 0; i < rows_; i++) {
-    for (int j = 0; j < cols_; j++) {
-      matrix_[i][j] = other.matrix_[i][j];
+bool S21Matrix::IsCorrect() const {
+  bool correct = (rows_ && cols_) ? YES : NO;
+
+  if (correct) {
+    for (int i = 0; i < rows_ * cols_; ++i) {
+      if (std::isnan(matrix_[i]) || std::isinf(matrix_[i])) {
+        correct = NO;
+      }
     }
   }
+
+  return correct;
 }
 
-/// @brief Print the matrix of the current object
-void S21Matrix::MatrixPrint() const {
-  if (rows_ && cols_) {
-    for (int i = 0; i < rows_; i++) {
-      for (int j = 0; j < cols_; j++) {
-        std::cout << matrix_[i][j] << " ";
-      }
-
-      std::cout << std::endl;
-    }
-  }
+/**
+ * @brief Compare size and valid of both matrix
+ *
+ * @param[in] other second matrix
+ * @retval YES (true) - correct matrix
+ * @retval NO (false) - if different size or contains nan or inf
+ */
+bool S21Matrix::CompareIsRight(const S21Matrix& other) const {
+  return (rows_ != other.rows_ || cols_ != other.cols_ || !IsCorrect() ||
+          !other.IsCorrect())
+             ? NO
+             : YES;
 }
 
 /**
@@ -98,76 +96,22 @@ void S21Matrix::MatrixPrint() const {
  *
  * @param[in] values the array where the numbers are entered from
  */
-void S21Matrix::FillMatrix(const double* values) {
-  for (int i = 0, cnt = 0; i < rows_; i++) {
-    for (int j = 0; j < cols_; j++) {
-      matrix_[i][j] = values[cnt++];
-    }
-  }
+void S21Matrix::Fill(const double* values) {
+  std::copy(values, values + rows_ * cols_, matrix_);
 }
 
 /**
- * @brief Checks the validity of the matrix
+ * @brief Get array element
  *
- * @retval true  - if the matrix contains nan or inf values
- * @retval false - correct matrix
+ * @param[in] row element row
+ * @param[in] col element col
+ * @return double - array element
  */
-bool S21Matrix::IsNanOrInf() const {
-  bool check = NO;
-
-  for (int i = 0; i < rows_; i++) {
-    for (int j = 0; j < cols_; j++) {
-      if (std::isnan(matrix_[i][j]) || std::isinf(matrix_[i][j])) {
-        check = YES;
-        i = rows_;
-        j = cols_;
-      }
-    }
+double S21Matrix::GetCell(const int row, const int col) const {
+  if (row >= rows_ || col >= cols_) {
+    throw std::invalid_argument("GetCell: invalid cell");
   }
-
-  return check;
-}
-
-/**
- * @brief Compares dimensionality and dimensional validity
- *
- * @param[in] other comparison matrix
- * @retval true  - correct matrix
- * @retval false - invalid size or size mismatch
- */
-bool S21Matrix::ValidEqualSize(const S21Matrix& other) const {
-  return (rows_ == other.rows_ && cols_ == other.cols_ && rows_ && cols_) ? YES
-                                                                          : NO;
-}
-
-/**
- * @brief Adds the second matrix to the current one
- *
- * @param[in] other added matrix
- */
-void S21Matrix::SumMatrix(const S21Matrix& other) {
-  if (ValidEqualSize(other) && !IsNanOrInf() && !other.IsNanOrInf()) {
-    for (int i = 0; i < rows_; i++) {
-      for (int j = 0; j < cols_; j++) {
-        matrix_[i][j] += other.matrix_[i][j];
-      }
-    }
-  }
-}
-
-/**
- * @brief Subtracts another matrix from the current one
- *
- * @param[in] other subtractable matrix
- */
-void S21Matrix::SubMatrix(const S21Matrix& other) {
-  if (ValidEqualSize(other) && !IsNanOrInf() && !other.IsNanOrInf()) {
-    for (int i = 0; i < rows_; i++) {
-      for (int j = 0; j < cols_; j++) {
-        matrix_[i][j] -= other.matrix_[i][j];
-      }
-    }
-  }
+  return matrix_[row * cols_ + col];
 }
 
 /**
@@ -178,23 +122,17 @@ void S21Matrix::SubMatrix(const S21Matrix& other) {
  * @retval false - the matrices are not equal
  */
 bool S21Matrix::EqMatrix(const S21Matrix& other) const {
-  bool status = YES;
+  bool equal = CompareIsRight(other);
 
-  if (ValidEqualSize(other) && !IsNanOrInf() && !other.IsNanOrInf()) {
-    for (int i = 0; i < rows_; i++) {
-      for (int j = 0; j < cols_; j++) {
-        if (std::abs(matrix_[i][j] - other.matrix_[i][j]) > 0.01) {
-          status = NO;
-          i = rows_;
-          j = cols_;
-        }
+  if (equal) {
+    for (int i = 0; i < rows_ * cols_ && equal; i++) {
+      if (std::abs(matrix_[i] - other.matrix_[i]) > PRECISION) {
+        equal = NO;
       }
     }
-  } else {
-    status = NO;
   }
 
-  return status;
+  return equal;
 }
 
 /**
@@ -219,45 +157,6 @@ bool S21Matrix::operator!=(const S21Matrix& other) const {
   return !EqMatrix(other);
 }
 
-/**
- * @brief Adds the second matrix to the current one via operator +
- *
- * @param[in] other added matrix
- * @return S21Matrix - result of addition
- */
-S21Matrix S21Matrix::operator+(const S21Matrix& other) const {
-  S21Matrix result(*this);
-  result.SumMatrix(other);
-
-  return result;
-}
-
-/**
- * @brief Subtracts another matrix from the current one via operator -
- *
- * @param[in] other subtractable matrix
- * @return S21Matrix - result of addition
- */
-S21Matrix S21Matrix::operator-(const S21Matrix& other) const {
-  S21Matrix result(*this);
-  result.SubMatrix(other);
-
-  return result;
-}
-
-/**
- * @brief Adds the second matrix to the current one via operator +=
- *
- * @param[in] other added matrix
- */
-void S21Matrix::operator+=(const S21Matrix& other) { SumMatrix(other); }
-
-/**
- * @brief Subtracts another matrix from the current one via operator -=
- *
- * @param other subtractable matrix
- */
-void S21Matrix::operator-=(const S21Matrix& other) { SubMatrix(other); }
 
 /**
  * @brief An assignment operator = that replaces the current matrix with the
@@ -266,12 +165,93 @@ void S21Matrix::operator-=(const S21Matrix& other) { SubMatrix(other); }
  * @param other assignable matrix
  */
 void S21Matrix::operator=(const S21Matrix& other) {
-  if (this != &other && other.rows_ > 0 && other.cols_ > 0) {
+  if(this != &other && other.rows_ && other.cols_) {
     Remove();
-
     rows_ = other.rows_;
     cols_ = other.cols_;
-    Allocate();
-    CopyValues(other);
+    matrix_ = Alloc();
+    std::copy(other.matrix_, other.matrix_ + rows_ * cols_, matrix_);
   }
+}
+
+// /**
+//  * @brief Adds the second matrix to the current one
+//  *
+//  * @param[in] other added matrix
+//  */
+// void S21Matrix::SumMatrix(const S21Matrix& other) {
+//   if (ValidEqualSize(other) && !IsNanOrInf() && !other.IsNanOrInf()) {
+//     for (int i = 0; i < rows_; i++) {
+//       for (int j = 0; j < cols_; j++) {
+//         matrix_[i][j] += other.matrix_[i][j];
+//       }
+//     }
+//   }
+// }
+
+// /**
+//  * @brief Subtracts another matrix from the current one
+//  *
+//  * @param[in] other subtractable matrix
+//  */
+// void S21Matrix::SubMatrix(const S21Matrix& other) {
+//   if (ValidEqualSize(other) && !IsNanOrInf() && !other.IsNanOrInf()) {
+//     for (int i = 0; i < rows_; i++) {
+//       for (int j = 0; j < cols_; j++) {
+//         matrix_[i][j] -= other.matrix_[i][j];
+//       }
+//     }
+//   }
+// }
+
+//   return status;
+// }
+
+// /**
+//  * @brief Adds the second matrix to the current one via operator +
+//  *
+//  * @param[in] other added matrix
+//  * @return S21Matrix - result of addition
+//  */
+// S21Matrix S21Matrix::operator+(const S21Matrix& other) const {
+//   S21Matrix result(*this);
+//   result.SumMatrix(other);
+
+//   return result;
+// }
+
+// /**
+//  * @brief Subtracts another matrix from the current one via operator -
+//  *
+//  * @param[in] other subtractable matrix
+//  * @return S21Matrix - result of addition
+//  */
+// S21Matrix S21Matrix::operator-(const S21Matrix& other) const {
+//   S21Matrix result(*this);
+//   result.SubMatrix(other);
+
+//   return result;
+// }
+
+// /**
+//  * @brief Adds the second matrix to the current one via operator +=
+//  *
+//  * @param[in] other added matrix
+//  */
+// void S21Matrix::operator+=(const S21Matrix& other) { SumMatrix(other); }
+
+// /**
+//  * @brief Subtracts another matrix from the current one via operator -=
+//  *
+//  * @param other subtractable matrix
+//  */
+// void S21Matrix::operator-=(const S21Matrix& other) { SubMatrix(other); }
+
+/// @brief Print the matrix of the current object
+void S21Matrix::Print() const {
+  for (int i = 0; i < rows_ * cols_; i++) {
+    if (i && i % cols_ == 0) std::cout << std::endl;
+    std::cout << matrix_[i] << " ";
+  }
+  std::cout << std::endl;
 }
