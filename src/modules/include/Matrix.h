@@ -30,25 +30,33 @@ class S21Matrix {
   enum Status { NO, YES };
 
  public:
-  S21Matrix(int r, int c);
+  S21Matrix(int rows, int cols);
   S21Matrix(const S21Matrix& other);
+  S21Matrix(S21Matrix&& other);
   S21Matrix();
   ~S21Matrix();
   void Fill(const double* values);
   void Print() const;
   int GetRows() const { return rows_; };
   int GetCols() const { return cols_; };
-  double GetCell(const int row, const int col) const;
+  double& operator()(int row, int col);
+  const double& operator()(int row, int col) const;
   bool EqMatrix(const S21Matrix& other) const;
   bool operator==(const S21Matrix& other) const;
   bool operator!=(const S21Matrix& other) const;
   void operator=(const S21Matrix& other);
-  // void SumMatrix(const S21Matrix& other);
-  // void SubMatrix(const S21Matrix& other);
-  // S21Matrix operator+(const S21Matrix& other) const;
-  // S21Matrix operator-(const S21Matrix& other) const;
-  // void operator+=(const S21Matrix& other);
-  // void operator-=(const S21Matrix& other);
+  void SumMatrix(const S21Matrix& other);
+  void SubMatrix(const S21Matrix& other);
+  void MulMatrix(const S21Matrix& other);
+  void MulNumber(const double num);
+  void operator+=(const S21Matrix& other);
+  void operator-=(const S21Matrix& other);
+  void operator*=(const S21Matrix& other);
+  void operator*=(const double num);
+  S21Matrix operator+(const S21Matrix& other) const;
+  S21Matrix operator-(const S21Matrix& other) const;
+  S21Matrix operator*(const S21Matrix& other) const;
+  S21Matrix operator*(const double num) const;
 };
 
 #endif  // MATRIX_H

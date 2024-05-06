@@ -14,15 +14,15 @@
 TEST(Sum_Matrix, Test_1) {
   S21Matrix matrix1(2, 2);
   double values1[] = {1.0, 2.0, 3.0, 4.0};
-  matrix1.FillMatrix(values1);
+  matrix1.Fill(values1);
 
   S21Matrix matrix2(2, 2);
   double values2[] = {5.0, 6.0, 7.0, 8.0};
-  matrix2.FillMatrix(values2);
+  matrix2.Fill(values2);
 
   S21Matrix expected(2, 2);
   double expected_values[] = {6.0, 8.0, 10.0, 12.0};
-  expected.FillMatrix(expected_values);
+  expected.Fill(expected_values);
 
   matrix1.SumMatrix(matrix2);
   EXPECT_TRUE(matrix1 == expected);
@@ -31,35 +31,39 @@ TEST(Sum_Matrix, Test_1) {
 TEST(Sum_Matrix, Test_2) {
   S21Matrix matrix1(3, 3);
   double values1[] = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0};
-  matrix1.FillMatrix(values1);
+  matrix1.Fill(values1);
 
   S21Matrix matrix2(3, 3);
   double values2[] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
-  matrix2.FillMatrix(values2);
+  matrix2.Fill(values2);
 
   S21Matrix expected(3, 3);
   double expected_values[] = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0};
-  expected.FillMatrix(expected_values);
+  expected.Fill(expected_values);
 
-  matrix1.SumMatrix(matrix2);
+  matrix1 += matrix2;
   EXPECT_TRUE(matrix1 == expected) << Print(matrix1, 0) << Print(expected, 1);
 }
 
 TEST(Sum_Matrix, Test_3) {
-  S21Matrix matrix1(2, 2);
-  double values1[] = {1.7357, 5234.32456745, 3455.2358258, -457387.2345};
-  matrix1.FillMatrix(values1);
+  S21Matrix matrix1;
+  double values1[] = {1.7357, 5234.32456745, 3455.2358258, -457387.2345, 1.111, 2.222, 3.333, 4.444, 5.555};
+  matrix1.Fill(values1);
 
-  S21Matrix matrix2(2, 2);
-  double values2[] = {4.543543, -1.5432534, 783465.543867453, 12.54345};
-  matrix2.FillMatrix(values2);
+  S21Matrix matrix2;
+  double values2[] = {4.543543, -1.5432534, 783465.543867453, 12.54345, 1.111, 2.222, 3.333, 4.444, 0.0 / 0.0};
+  matrix2.Fill(values2);
 
-  S21Matrix expected(2, 2);
-  double expected_values[] = {6.279243, 5232.78131401, 786920.779693253,
-                              -457374.69105};
-  expected.FillMatrix(expected_values);
+  S21Matrix expected;
+  double expected_values[] = {6.279243, 5232.78131405, 786920.779693253, -457374.69105, 2.222, 4.444, 6.666, 8.888, 11.11};
+  expected.Fill(expected_values);
 
-  matrix1.SumMatrix(matrix2);
+  matrix1 = matrix1 + matrix2;
+
+  double values3[] = {4.543543, -1.5432534, 783465.543867453, 12.54345, 1.111, 2.222, 3.333, 4.444, 5.555};
+  matrix2.Fill(values3);
+  matrix1 = matrix1 + matrix2;
+
   EXPECT_TRUE(matrix1 == expected) << Print(matrix1, 0) << Print(expected, 1);
 }
 
@@ -67,16 +71,16 @@ TEST(Sum_Matrix, Test_4) {
   S21Matrix matrix1(1, 5);
   double values1[] = {1.7357, 5234.32456745, 3455.2358258, -457387.2345,
                       4.543543};
-  matrix1.FillMatrix(values1);
+  matrix1.Fill(values1);
 
   S21Matrix matrix2(1, 5);
   double values2[] = {-1.5432534, 783465.543867453, 12.54345, 0, 1};
-  matrix2.FillMatrix(values2);
+  matrix2.Fill(values2);
 
   S21Matrix expected(1, 5);
   double expected_values[] = {0.1924466, 788699.868434903, 3467.7792758,
                               -457387.2345, 5.543543};
-  expected.FillMatrix(expected_values);
+  expected.Fill(expected_values);
 
   matrix1.SumMatrix(matrix2);
   EXPECT_TRUE(matrix1 == expected) << Print(matrix1, 0) << Print(expected, 1);
@@ -87,18 +91,18 @@ TEST(Sum_Matrix, Test_5) {
   double values1[] = {6534.6534645,     -6453.654654,    345345.6765,
                       65434234.4234234, 1.1111111111111, -7.77777777,
                       345.6789};
-  matrix1.FillMatrix(values1);
+  matrix1.Fill(values1);
 
   S21Matrix matrix2(7, 1);
   double values2[] = {-9876.54321, 123456.789,  -123456789.123456, 0.0000001,
                       1000000.0,   -0.12345789, 0.987654321};
-  matrix2.FillMatrix(values2);
+  matrix2.Fill(values2);
 
   S21Matrix expected(7, 1);
   double expected_values[] = {
       -3341.8897455,         117003.134346, -123111443.446956, 65434234.4234235,
       1000001.1111111111111, -7.90123566,   346.666554321};
-  expected.FillMatrix(expected_values);
+  expected.Fill(expected_values);
 
   matrix1.SumMatrix(matrix2);
   EXPECT_TRUE(matrix1 == expected) << Print(matrix1, 0) << Print(expected, 1);
@@ -108,19 +112,19 @@ TEST(Sum_Matrix, Test_6) {
   S21Matrix matrix1(2, 3);
   double values1[] = {
       0, 1, 6534.6534645, -6453.654654, 345345.6765, 65434234.4234234};
-  matrix1.FillMatrix(values1);
+  matrix1.Fill(values1);
 
   S21Matrix matrix2(3, 2);
   double values2[] = {1.1111111111111, -7.77777777, 345.6789,
                       -9876.54321,     123456.789,  -123456789.123456,
                       0.0000001,       1000000.0};
-  matrix2.FillMatrix(values2);
+  matrix2.Fill(values2);
 
   S21Matrix expected(2, 3);
   double expected_values[] = {1.1111111111111, -7.77777777, 345.6789,
                               -9876.54321,     123456.789,  -123456789.123456,
                               1.0000001,       1000001.0};
-  expected.FillMatrix(expected_values);
+  expected.Fill(expected_values);
 
   matrix1.SumMatrix(matrix2);
   EXPECT_FALSE(matrix1 == expected) << Print(matrix1, 0) << Print(expected, 1);
@@ -129,16 +133,16 @@ TEST(Sum_Matrix, Test_6) {
 TEST(Sum_Matrix, Test_7) {
   S21Matrix matrix1(2, 2);
   double values1[] = {1.7357, 5234.32456745, 3455.2358258, -457387.2345};
-  matrix1.FillMatrix(values1);
+  matrix1.Fill(values1);
 
   S21Matrix matrix2(2, 2);
   double values2[] = {4.543543, -1.5432534, 783465.543867453, 12.54345};
-  matrix2.FillMatrix(values2);
+  matrix2.Fill(values2);
 
   S21Matrix expected(2, 2);
   double expected_values[] = {6.279243, 5232.78131405, 786920.779693253,
                               -457374.69105};
-  expected.FillMatrix(expected_values);
+  expected.Fill(expected_values);
 
   matrix1.SumMatrix(matrix2);
   EXPECT_TRUE(matrix1 == expected) << Print(matrix1, 0) << Print(expected, 1);
@@ -150,19 +154,19 @@ TEST(Sum_Matrix, Test_8) {
                       65434234.4234234,  1.1111111111111, -7.77777777,
                       345.6789,          -9876.54321,     123456.789,
                       -123456789.123456, 0.0000001,       1000000.0};
-  matrix1.FillMatrix(values1);
+  matrix1.Fill(values1);
 
   S21Matrix matrix2(3, 4);
   double values2[] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
                       0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
-  matrix2.FillMatrix(values2);
+  matrix2.Fill(values2);
 
   S21Matrix expected(3, 4);
   double expected_values[] = {6534.6534645,      -6453.654654,    345345.6765,
                               65434234.4234234,  1.1111111111111, -7.77777777,
                               345.6789,          -9876.54321,     123456.789,
                               -123456789.123456, 0.0000001,       1000000.0};
-  expected.FillMatrix(expected_values);
+  expected.Fill(expected_values);
 
   matrix1.SumMatrix(matrix2);
   EXPECT_TRUE(matrix1 == expected) << Print(matrix1, 0) << Print(expected, 1);
@@ -197,7 +201,7 @@ TEST(Sum_Matrix, Test_9) {
                       -6453.654654,
                       345345.6765,
                       65434234};
-  matrix1.FillMatrix(values1);
+  matrix1.Fill(values1);
 
   S21Matrix matrix2(9, 3);
   double values2[] = {5772156.649015329,
@@ -227,7 +231,7 @@ TEST(Sum_Matrix, Test_9) {
                       987654313.22222223,
                       -456788777.3211,
                       74324.77121211};
-  matrix2.FillMatrix(values2);
+  matrix2.Fill(values2);
 
   S21Matrix expected(9, 3);
   double expected_values[] = {5778691.302479829,
@@ -257,7 +261,7 @@ TEST(Sum_Matrix, Test_9) {
                               987647859.56756823,
                               -456443431.6446,
                               65508558.77121211};
-  expected.FillMatrix(expected_values);
+  expected.Fill(expected_values);
 
   matrix1.SumMatrix(matrix2);
   EXPECT_TRUE(matrix1 == expected) << Print(matrix1, 0) << Print(expected, 1);
@@ -297,7 +301,7 @@ TEST(Sum_Matrix, Test_10) {
                       1234567.89,
                       -123456.789,
                       12345.6789};
-  matrix1.FillMatrix(values1);
+  matrix1.Fill(values1);
 
   S21Matrix matrix2(8, 4);
   double values2[] = {2.71828,
@@ -332,7 +336,7 @@ TEST(Sum_Matrix, Test_10) {
                       4533.645645,
                       -125342.1111,
                       57347234.234234};
-  matrix2.FillMatrix(values2);
+  matrix2.Fill(values2);
 
   S21Matrix expected(8, 4);
   double expected_values[] = {4.45398,
@@ -367,7 +371,7 @@ TEST(Sum_Matrix, Test_10) {
                               1239101.535645,
                               -248798.9001,
                               57359579.913134};
-  expected.FillMatrix(expected_values);
+  expected.Fill(expected_values);
 
   matrix1.SumMatrix(matrix2);
   EXPECT_TRUE(matrix1 == expected) << Print(matrix1, 0) << Print(expected, 1);

@@ -13,18 +13,14 @@
 
 int main()
 {
-  double init1[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16};
-  double init2[] = {9, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16};
-  S21Matrix first;
-  S21Matrix second;
-  first.Fill(init1);
-  second.Fill(init2);
-  second = first;
-  // std::cout << ((first == second) ? "\nMatrix are equal\n\n" : "\nMatrix are not equal\n\n");
-  // first.Print();
-  // first.FillMatrix(init);
-  second.Print();
-  // first.SumMatrix(second);
-  // S21Matrix k(first);
-  // k.MatrixPrint();
+  S21Matrix matrix1(3, 3);
+  double values1[] = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+  matrix1.Fill(values1);
+
+  S21Matrix matrix2(3, 3);
+  double values2[] = {9, 8, 7, 6, 5, 4, 3, 2, 1};
+  matrix2.Fill(values2);
+
+  matrix1 *= matrix2;
+  matrix1.Print();
 }

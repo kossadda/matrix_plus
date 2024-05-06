@@ -36,7 +36,7 @@ std::string Print(S21Matrix& m, int mode) {
   os << ((!mode) ? "  Actual: " : "Expected: ");
   for (int i = 0; i < m.GetRows(); i++) {
     for (int j = 0; j < m.GetCols(); j++) {
-      os << m.GetCell(i, j) << " ";
+      os << m(i, j) << " ";
     }
   }
   os << std::endl;

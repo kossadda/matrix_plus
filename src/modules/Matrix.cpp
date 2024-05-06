@@ -20,7 +20,7 @@ S21Matrix::S21Matrix() : rows_(DEFAULT), cols_(DEFAULT), matrix_(Alloc()) {}
  * @param[in] rows number of matrix rows
  * @param[in] cols number of matrix columns
  */
-S21Matrix::S21Matrix(int r, int c) : rows_(r), cols_(c), matrix_(Alloc()) {}
+S21Matrix::S21Matrix(int rows, int cols) : rows_(rows), cols_(cols), matrix_(Alloc()) {}
 
 /// @brief Destructor
 S21Matrix::~S21Matrix() { Remove(); }
@@ -33,6 +33,18 @@ S21Matrix::~S21Matrix() { Remove(); }
 S21Matrix::S21Matrix(const S21Matrix& other)
     : rows_(other.rows_), cols_(other.cols_), matrix_(Alloc()) {
   std::copy(other.matrix_, other.matrix_ + rows_ * cols_, matrix_);
+}
+
+/**
+ * @brief Move constructor
+ *
+ * @param[in] other Object to be moved
+ */
+S21Matrix::S21Matrix(S21Matrix&& other)
+    : rows_(other.rows_), cols_(other.cols_), matrix_(other.matrix_) {
+  other.rows_ = 0;
+  other.cols_ = 0;
+  other.matrix_ = nullptr;
 }
 
 /// @brief Allocates memory for a matrix with the current fields rows_ and cols_
@@ -100,6 +112,15 @@ void S21Matrix::Fill(const double* values) {
   std::copy(values, values + rows_ * cols_, matrix_);
 }
 
+/// @brief Print the matrix of the current object
+void S21Matrix::Print() const {
+  for (int i = 0; i < rows_ * cols_; i++) {
+    if (i && i % cols_ == 0) std::cout << std::endl;
+    std::cout << matrix_[i] << " ";
+  }
+  std::cout << std::endl;
+}
+
 /**
  * @brief Get array element
  *
@@ -107,10 +128,24 @@ void S21Matrix::Fill(const double* values) {
  * @param[in] col element col
  * @return double - array element
  */
-double S21Matrix::GetCell(const int row, const int col) const {
-  if (row >= rows_ || col >= cols_) {
-    throw std::invalid_argument("GetCell: invalid cell");
-  }
+double& S21Matrix::operator()(int row, int col) {
+  if(row >= rows_ ||  col >= cols_)
+    throw std::out_of_range("Index out of range");
+  
+  return matrix_[row * cols_ + col];
+}
+
+/**
+ * @brief Get array element (const method)
+ *
+ * @param[in] row element row
+ * @param[in] col element col
+ * @return double - array element
+ */
+const double& S21Matrix::operator()(int row, int col) const {
+  if(row >= rows_ ||  col >= cols_)
+    throw std::out_of_range("Index out of range");
+  
   return matrix_[row * cols_ + col];
 }
 
@@ -174,84 +209,144 @@ void S21Matrix::operator=(const S21Matrix& other) {
   }
 }
 
-// /**
-//  * @brief Adds the second matrix to the current one
-//  *
-//  * @param[in] other added matrix
-//  */
-// void S21Matrix::SumMatrix(const S21Matrix& other) {
-//   if (ValidEqualSize(other) && !IsNanOrInf() && !other.IsNanOrInf()) {
-//     for (int i = 0; i < rows_; i++) {
-//       for (int j = 0; j < cols_; j++) {
-//         matrix_[i][j] += other.matrix_[i][j];
-//       }
-//     }
-//   }
-// }
+/**
+ * @brief Adds the second matrix to the current one
+ *
+ * @param[in] other added matrix
+ */
+void S21Matrix::SumMatrix(const S21Matrix& other) {
+  if(!CompareIsRight(other))
+    throw std::invalid_argument("SumMatrix: invalid arguments");
 
-// /**
-//  * @brief Subtracts another matrix from the current one
-//  *
-//  * @param[in] other subtractable matrix
-//  */
-// void S21Matrix::SubMatrix(const S21Matrix& other) {
-//   if (ValidEqualSize(other) && !IsNanOrInf() && !other.IsNanOrInf()) {
-//     for (int i = 0; i < rows_; i++) {
-//       for (int j = 0; j < cols_; j++) {
-//         matrix_[i][j] -= other.matrix_[i][j];
-//       }
-//     }
-//   }
-// }
-
-//   return status;
-// }
-
-// /**
-//  * @brief Adds the second matrix to the current one via operator +
-//  *
-//  * @param[in] other added matrix
-//  * @return S21Matrix - result of addition
-//  */
-// S21Matrix S21Matrix::operator+(const S21Matrix& other) const {
-//   S21Matrix result(*this);
-//   result.SumMatrix(other);
-
-//   return result;
-// }
-
-// /**
-//  * @brief Subtracts another matrix from the current one via operator -
-//  *
-//  * @param[in] other subtractable matrix
-//  * @return S21Matrix - result of addition
-//  */
-// S21Matrix S21Matrix::operator-(const S21Matrix& other) const {
-//   S21Matrix result(*this);
-//   result.SubMatrix(other);
-
-//   return result;
-// }
-
-// /**
-//  * @brief Adds the second matrix to the current one via operator +=
-//  *
-//  * @param[in] other added matrix
-//  */
-// void S21Matrix::operator+=(const S21Matrix& other) { SumMatrix(other); }
-
-// /**
-//  * @brief Subtracts another matrix from the current one via operator -=
-//  *
-//  * @param other subtractable matrix
-//  */
-// void S21Matrix::operator-=(const S21Matrix& other) { SubMatrix(other); }
-
-/// @brief Print the matrix of the current object
-void S21Matrix::Print() const {
   for (int i = 0; i < rows_ * cols_; i++) {
-    if (i && i % cols_ == 0) std::cout << std::endl;
-    std::cout << matrix_[i] << " ";
+    matrix_[i] += other.matrix_[i];
   }
-  std::cout << std::endl;
 }
+
+/**
+ * @brief Subtracts another matrix from the current one
+ *
+ * @param[in] other subtractable matrix
+ */
+void S21Matrix::SubMatrix(const S21Matrix& other) {
+  if(!CompareIsRight(other))
+    throw std::invalid_argument("SubMatrix: invalid arguments");
+
+  for (int i = 0; i < rows_ * cols_; i++) {
+    matrix_[i] -= other.matrix_[i];
+  }
+}
+
+/**
+ * @brief Multiplies a matrix by a matrix
+ * 
+ * @param[in] num matrix to be multiplied
+ */
+void S21Matrix::MulMatrix(const S21Matrix& other) {
+  if(cols_ != other.rows_ || !IsCorrect() || !other.IsCorrect())
+    throw std::invalid_argument("MulMatrix: invalid arguments");
+
+  S21Matrix result(rows_, other.cols_);
+  
+  for(int i = 0; i < result.rows_; i++) {
+    for(int j = 0; j < result.cols_; j++) {
+      for(int k = 0; k < cols_; k++) {
+        result(i, j) += (*this)(i, k) * other(k, j);  
+      }
+    }
+  }
+
+  (*this) = std::move(result);
+}
+
+/**
+ * @brief Multiplies a matrix by a number
+ * 
+ * @param[in] num number to be multiplied
+ */
+void S21Matrix::MulNumber(const double num) {
+  if(!IsCorrect() || std::isinf(num) || std::isnan(num))
+    throw std::invalid_argument("MulNumber: invalid arguments");
+
+  for (int i = 0; i < rows_ * cols_; i++) {
+    matrix_[i] *= num;
+  }
+}
+
+/**
+ * @brief Adds the second matrix to the current one via operator +
+ *
+ * @param[in] other added matrix
+ * @return S21Matrix - result of addition
+ */
+S21Matrix S21Matrix::operator+(const S21Matrix& other) const {
+  S21Matrix result(*this);
+  result.SumMatrix(other);
+
+  return result;
+}
+
+/**
+ * @brief Subtracts another matrix from the current one via operator -
+ *
+ * @param[in] other subtractable matrix
+ * @return S21Matrix - result of addition
+ */
+S21Matrix S21Matrix::operator-(const S21Matrix& other) const {
+  S21Matrix result(*this);
+  result.SubMatrix(other);
+
+  return result;
+}
+
+/**
+ * @brief Multiplies a matrix by a matrix via operator *
+ *
+ * @param[in] other matrix to be multiplied
+ */
+S21Matrix S21Matrix::operator*(const S21Matrix& other) const { 
+  S21Matrix result(*this);
+  result.MulMatrix(other);
+
+  return result;
+}
+
+/**
+ * @brief Multiplies a matrix by a number via operator *
+ *
+ * @param[in] num number to be multiplied
+ */
+S21Matrix S21Matrix::operator*(const double num) const { 
+  S21Matrix result(*this);
+  result.MulNumber(num);
+
+  return result;
+}
+
+/**
+ * @brief Adds the second matrix to the current one via operator +=
+ *
+ * @param[in] other added matrix
+ */
+void S21Matrix::operator+=(const S21Matrix& other) { SumMatrix(other); }
+
+/**
+ * @brief Subtracts another matrix from the current one via operator -=
+ *
+ * @param[in] other subtractable matrix
+ */
+void S21Matrix::operator-=(const S21Matrix& other) { SubMatrix(other); }
+
+/**
+ * @brief Multiplies a matrix by a matrix via operator *=
+ *
+ * @param[in] other matrix to be multiplied
+ */
+void S21Matrix::operator*=(const S21Matrix& other) { MulMatrix(other); }
+
+/**
+ * @brief Multiplies a matrix by a number via operator *=
+ *
+ * @param[in] num number to be multiplied
+ */
+void S21Matrix::operator*=(const double num) { MulNumber(num); }
