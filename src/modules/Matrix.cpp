@@ -137,20 +137,6 @@ double& S21Matrix::operator()(int row, int col) {
 }
 
 /**
- * @brief Get array element (const method)
- *
- * @param[in] row element row
- * @param[in] col element col
- * @return double - array element
- */
-const double& S21Matrix::operator()(int row, int col) const {
-  if (row >= rows_ || col >= cols_)
-    throw std::out_of_range("Index out of range");
-
-  return matrix_[row * cols_ + col];
-}
-
-/**
  * @brief Checks matrices for equality with each other
  *
  * @param[in] other comparison matrix
@@ -246,17 +232,17 @@ void S21Matrix::MulMatrix(const S21Matrix& other) {
   if (cols_ != other.rows_ || !IsCorrect() || !other.IsCorrect())
     throw std::invalid_argument("MulMatrix: invalid arguments");
 
-  S21Matrix result(rows_, other.cols_);
+  S21Matrix res(rows_, other.cols_);
 
-  for (int i = 0; i < result.rows_; i++) {
-    for (int j = 0; j < result.cols_; j++) {
+  for (int i = 0; i < res.rows_; i++) {
+    for (int j = 0; j < res.cols_; j++) {
       for (int k = 0; k < cols_; k++) {
-        result(i, j) += (*this)(i, k) * other(k, j);
+        res.matrix_[i * res.cols_ + j] += matrix_[i * cols_ + k] * other.matrix_[k * other.cols_ + j];
       }
     }
   }
 
-  (*this) = std::move(result);
+  (*this) = std::move(res);
 }
 
 /**
@@ -350,3 +336,20 @@ void S21Matrix::operator*=(const S21Matrix& other) { MulMatrix(other); }
  * @param[in] num number to be multiplied
  */
 void S21Matrix::operator*=(const double num) { MulNumber(num); }
+
+/**
+ * @brief Creates a transposed matrix
+ * 
+ * @return S21Matrix - transposed matrix
+ */
+S21Matrix S21Matrix::Transpose() {
+  S21Matrix tr(cols_, rows_);
+
+  for(int i = 0; i < rows_; i++) {
+    for(int j = 0; j < cols_; j++) {
+      tr.matrix_[j * tr.cols_ + i] = matrix_[i * cols_ + j];
+    }
+  }
+
+  return tr;
+}

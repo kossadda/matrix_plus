@@ -39,16 +39,15 @@ class S21Matrix {
   void Print() const;
   int GetRows() const { return rows_; };
   int GetCols() const { return cols_; };
-  double& operator()(int row, int col);
-  const double& operator()(int row, int col) const;
   bool EqMatrix(const S21Matrix& other) const;
-  bool operator==(const S21Matrix& other) const;
-  bool operator!=(const S21Matrix& other) const;
-  void operator=(const S21Matrix& other);
   void SumMatrix(const S21Matrix& other);
   void SubMatrix(const S21Matrix& other);
   void MulMatrix(const S21Matrix& other);
   void MulNumber(const double num);
+  double& operator()(int row, int col);
+  bool operator==(const S21Matrix& other) const;
+  bool operator!=(const S21Matrix& other) const;
+  void operator=(const S21Matrix& other);
   void operator+=(const S21Matrix& other);
   void operator-=(const S21Matrix& other);
   void operator*=(const S21Matrix& other);
@@ -57,6 +56,7 @@ class S21Matrix {
   S21Matrix operator-(const S21Matrix& other) const;
   S21Matrix operator*(const S21Matrix& other) const;
   S21Matrix operator*(const double num) const;
+  S21Matrix Transpose();
 };
 
 #endif  // MATRIX_H

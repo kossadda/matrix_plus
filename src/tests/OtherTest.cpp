@@ -73,7 +73,7 @@ TEST(ConstructorTest, Test_5) {
 }
 
 TEST(PrintTest, Test_1) {
-  S21Matrix matrix(1, 1);
+  S21Matrix matrix(3, 3);
   matrix.Print();
 }
 
