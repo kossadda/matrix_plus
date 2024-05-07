@@ -346,9 +346,6 @@ S21Matrix S21Matrix::Transpose() {
   if(!IsCorrect())
     throw std::invalid_argument("Transpose: invalid argument");
 
-  if(rows_ == cols_)
-    return *this;
-
   S21Matrix tr(cols_, rows_);
 
   for(int i = 0; i < rows_; i++) {
@@ -425,6 +422,11 @@ S21Matrix S21Matrix::Minor(int row, int col) {
   return minor;
 }
 
+/**
+ * @brief Computes the algebraic complement matrix of a matrix and returns i
+ * 
+ * @return S21Matrix - algebraic complement matrix
+ */
 S21Matrix S21Matrix::CalcComplements() {
   if(rows_ != cols_ || !IsCorrect())
     throw std::invalid_argument("CalcComplements: invalid argument");
@@ -442,4 +444,31 @@ S21Matrix S21Matrix::CalcComplements() {
   }
 
   return res;
+}
+
+/**
+ * @brief Calculates and returns the inverse matrix
+ * 
+ * @return S21Matrix - inverse matrix
+ */
+S21Matrix S21Matrix::InverseMatrix() {
+  if(rows_ != cols_ || !IsCorrect())
+    throw std::invalid_argument("InverseMatrix: invalid argument");
+
+  if(rows_ == 1) {
+    if(*matrix_) {
+      S21Matrix copy(*this);
+      *copy.matrix_ = 1 / *matrix_;
+      return copy;
+    } else {
+      throw std::invalid_argument("InverseMatrix: invalid argument");
+    }
+  }
+
+  double determ = Determinant();
+
+  if(!determ)
+    throw std::invalid_argument("InverseMatrix: matrix determinant equals 0");
+
+  return CalcComplements().Transpose() * (1.0 / determ);
 }

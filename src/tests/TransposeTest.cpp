@@ -28,7 +28,8 @@ TEST(TransposeTest, Test_1) {
   double expected_values[] = {1.0, 3.0, 5.0, 7.0, 9.0, 2.0, 4.0, 6.0, 8.0, 0.0};
   expected.Fill(expected_values);
 
-  EXPECT_TRUE(matrix1.Transpose() == expected);
+  matrix1 = matrix1.Transpose();
+  EXPECT_TRUE(matrix1 == expected) << Print(matrix1, 0) << Print(expected, 1);
 }
 
 TEST(TransposeTest, Test_2) {
@@ -40,7 +41,8 @@ TEST(TransposeTest, Test_2) {
   double expected_values[] = {1.0, 2.0, 3.0};
   expected.Fill(expected_values);
 
-  EXPECT_TRUE(matrix1.Transpose() == expected);
+  matrix1 = matrix1.Transpose();
+  EXPECT_TRUE(matrix1 == expected) << Print(matrix1, 0) << Print(expected, 1);
 }
 
 TEST(TransposeTest, Test_3) {
@@ -49,6 +51,9 @@ TEST(TransposeTest, Test_3) {
   matrix1.Fill(values1);
 
   S21Matrix expected(matrix1);
+  double expected_values[] = {1.0, 3.0, 2.0, 4.0};
+  expected.Fill(expected_values);
 
-  EXPECT_TRUE(matrix1.Transpose() == expected);
+  matrix1 = matrix1.Transpose();
+  EXPECT_TRUE(matrix1 == expected) << Print(matrix1, 0) << Print(expected, 1);
 }

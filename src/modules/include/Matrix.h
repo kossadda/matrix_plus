@@ -61,6 +61,7 @@ class S21Matrix {
   S21Matrix Transpose();
   double Determinant();
   S21Matrix CalcComplements();
+  S21Matrix InverseMatrix();
 };
 
 #endif  // MATRIX_H
