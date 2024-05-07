@@ -48,7 +48,7 @@ S21Matrix::S21Matrix(S21Matrix&& other)
   other.matrix_ = nullptr;
 }
 
-/// @brief Allocates memory for a matrix with the current fields rows_ and cols_
+/// @brief Helper method. Allocates memory for a matrix with the current fields rows_ and cols_
 double* S21Matrix::Alloc() {
   if (rows_ <= 0 || cols_ <= 0)
     throw std::invalid_argument("Constructor: invalid matrix size");
@@ -60,7 +60,7 @@ double* S21Matrix::Alloc() {
   }
 }
 
-/// @brief Clears the memory allocated in field matrix_
+/// @brief Helper method. Clears the memory allocated in field matrix_
 void S21Matrix::Remove() {
   if (matrix_) {
     delete[] matrix_;
@@ -71,7 +71,7 @@ void S21Matrix::Remove() {
 }
 
 /**
- * @brief Checks the validity of the matrix
+ * @brief Helper method. Checks the validity of the matrix
  *
  * @retval NO (false) - if wrong size or matrix contains nan or inf values
  * @retval YES (true) - correct matrix
@@ -91,7 +91,7 @@ bool S21Matrix::IsCorrect() const {
 }
 
 /**
- * @brief Compare size and valid of both matrix
+ * @brief Helper method. Compare size and valid of both matrix
  *
  * @param[in] other second matrix
  * @retval YES (true) - correct matrix
@@ -380,7 +380,7 @@ double S21Matrix::Determinant() {
 }
 
 /**
- * @brief Recursive loop for determining determinants of all minors
+ * @brief Helper method. Recursive loop for determining determinants of all minors
  * 
  * @return double - determinant of minor
  */
@@ -400,7 +400,7 @@ double S21Matrix::Recursive() {
 }
 
 /**
- * @brief Forms a minor relative to the specified matrix cell
+ * @brief Helper method. Forms a minor relative to the specified matrix cell
  * 
  * @param row cells row
  * @param col cells col
@@ -423,4 +423,23 @@ S21Matrix S21Matrix::Minor(int row, int col) {
   }
 
   return minor;
+}
+
+S21Matrix S21Matrix::CalcComplements() {
+  if(rows_ != cols_ || !IsCorrect())
+    throw std::invalid_argument("CalcComplements: invalid argument");
+
+  if(rows_ == 1)
+    return *this;
+
+  S21Matrix res(rows_, cols_);
+  
+  for(int i = 0; i < rows_; i++) {
+    for(int j = 0; j < cols_; j++) {
+      S21Matrix tmp(Minor(i, j));
+      res.matrix_[i * res.cols_ + j] = tmp.Determinant() * std::pow(-1, i + j);
+    }
+  }
+
+  return res;
 }

@@ -60,6 +60,7 @@ class S21Matrix {
   S21Matrix operator*(const double num) const;
   S21Matrix Transpose();
   double Determinant();
+  S21Matrix CalcComplements();
 };
 
 #endif  // MATRIX_H
