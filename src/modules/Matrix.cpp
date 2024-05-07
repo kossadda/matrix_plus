@@ -343,6 +343,12 @@ void S21Matrix::operator*=(const double num) { MulNumber(num); }
  * @return S21Matrix - transposed matrix
  */
 S21Matrix S21Matrix::Transpose() {
+  if(!IsCorrect())
+    throw std::invalid_argument("Transpose: invalid argument");
+
+  if(rows_ == cols_)
+    return *this;
+
   S21Matrix tr(cols_, rows_);
 
   for(int i = 0; i < rows_; i++) {
@@ -352,4 +358,69 @@ S21Matrix S21Matrix::Transpose() {
   }
 
   return tr;
+}
+
+/**
+ * @brief Computes and returns the determinant of a matrix
+ * 
+ * @return double - determinant of a matrix
+ */
+double S21Matrix::Determinant() {
+  double determinant;
+
+  if(rows_ != cols_ || !IsCorrect())
+    throw std::invalid_argument("Determinant: invalid argument");
+
+  if(rows_ == 1 && cols_ == 1)
+    determinant = *matrix_;
+  else
+    determinant = Recursive();
+
+  return determinant;
+}
+
+/**
+ * @brief Recursive loop for determining determinants of all minors
+ * 
+ * @return double - determinant of minor
+ */
+double S21Matrix::Recursive() {
+  double minor_determ = 0;
+
+  if(cols_ != 2) {
+    for(int j = 0; j < cols_; j++) {
+      S21Matrix minor(Minor(0, j));
+      minor_determ += std::pow(-1, j) * matrix_[j] * minor.Recursive();
+    }
+  } else {
+    minor_determ += matrix_[0] * matrix_[3] - matrix_[1] * matrix_[2];
+  }
+
+  return minor_determ;
+}
+
+/**
+ * @brief Forms a minor relative to the specified matrix cell
+ * 
+ * @param row cells row
+ * @param col cells col
+ * @return S21Matrix - matrix minor
+ */
+S21Matrix S21Matrix::Minor(int row, int col) {
+  S21Matrix minor(rows_ - 1, cols_ - 1);
+
+  for(int i = 0, m = 0; i < rows_; i++) {
+    if(i == row) continue;
+
+    for(int j = 0, n = 0; j < cols_; j++) {
+      if(j == col) continue;
+      
+      minor.matrix_[m * minor.cols_ + n] = matrix_[i * cols_ + j];
+      n++;
+    }
+
+    m++;
+  }
+
+  return minor;
 }

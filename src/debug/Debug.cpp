@@ -13,17 +13,12 @@
 
 int main()
 {
-  S21Matrix matrix1(3, 2);
-  double values1[] = {5.23, 53456.11, 534.532, 0.432567, 24.5363, 6453.23444};
+  S21Matrix matrix1(4, 4);
+  double values1[] = {1.123, 4.534, 1.1235, 6.331, 7.77, 0.5345, 111.14, 456.66, 57.787, 354.11, 1231, 4.565, 0.0, 14.44, 23.333, 1.534};
   matrix1.Fill(values1);
 
-  matrix1.Print();
-
-  std::cout << std::endl;
-
-  matrix1 = matrix1.Transpose();
-
-  matrix1.Print();
+  double res = -7429360.2403818 - matrix1.Determinant();
+  printf("\n%lf\n\n", res);
 
   return 0;
 }

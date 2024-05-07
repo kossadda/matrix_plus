@@ -27,6 +27,8 @@ class S21Matrix {
   bool CompareIsRight(const S21Matrix& other) const;
   double* Alloc();
   void Remove();
+  double Recursive();
+  S21Matrix Minor(int row, int col);
   enum Status { NO, YES };
 
  public:
@@ -57,6 +59,7 @@ class S21Matrix {
   S21Matrix operator*(const S21Matrix& other) const;
   S21Matrix operator*(const double num) const;
   S21Matrix Transpose();
+  double Determinant();
 };
 
 #endif  // MATRIX_H
