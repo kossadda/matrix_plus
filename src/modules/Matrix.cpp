@@ -20,7 +20,8 @@ S21Matrix::S21Matrix() : rows_(DEFAULT), cols_(DEFAULT), matrix_(Alloc()) {}
  * @param[in] rows number of matrix rows
  * @param[in] cols number of matrix columns
  */
-S21Matrix::S21Matrix(int rows, int cols) : rows_(rows), cols_(cols), matrix_(Alloc()) {}
+S21Matrix::S21Matrix(int rows, int cols)
+    : rows_(rows), cols_(cols), matrix_(Alloc()) {}
 
 /// @brief Destructor
 S21Matrix::~S21Matrix() { Remove(); }
@@ -76,7 +77,7 @@ void S21Matrix::Remove() {
  * @retval YES (true) - correct matrix
  */
 bool S21Matrix::IsCorrect() const {
-  bool correct = (rows_ && cols_) ? YES : NO;
+  bool correct = YES;
 
   if (correct) {
     for (int i = 0; i < rows_ * cols_; ++i) {
@@ -129,9 +130,9 @@ void S21Matrix::Print() const {
  * @return double - array element
  */
 double& S21Matrix::operator()(int row, int col) {
-  if(row >= rows_ ||  col >= cols_)
+  if (row >= rows_ || col >= cols_)
     throw std::out_of_range("Index out of range");
-  
+
   return matrix_[row * cols_ + col];
 }
 
@@ -143,9 +144,9 @@ double& S21Matrix::operator()(int row, int col) {
  * @return double - array element
  */
 const double& S21Matrix::operator()(int row, int col) const {
-  if(row >= rows_ ||  col >= cols_)
+  if (row >= rows_ || col >= cols_)
     throw std::out_of_range("Index out of range");
-  
+
   return matrix_[row * cols_ + col];
 }
 
@@ -192,7 +193,6 @@ bool S21Matrix::operator!=(const S21Matrix& other) const {
   return !EqMatrix(other);
 }
 
-
 /**
  * @brief An assignment operator = that replaces the current matrix with the
  * input one
@@ -200,7 +200,7 @@ bool S21Matrix::operator!=(const S21Matrix& other) const {
  * @param other assignable matrix
  */
 void S21Matrix::operator=(const S21Matrix& other) {
-  if(this != &other && other.rows_ && other.cols_) {
+  if (this != &other) {
     Remove();
     rows_ = other.rows_;
     cols_ = other.cols_;
@@ -215,7 +215,7 @@ void S21Matrix::operator=(const S21Matrix& other) {
  * @param[in] other added matrix
  */
 void S21Matrix::SumMatrix(const S21Matrix& other) {
-  if(!CompareIsRight(other))
+  if (!CompareIsRight(other))
     throw std::invalid_argument("SumMatrix: invalid arguments");
 
   for (int i = 0; i < rows_ * cols_; i++) {
@@ -229,7 +229,7 @@ void S21Matrix::SumMatrix(const S21Matrix& other) {
  * @param[in] other subtractable matrix
  */
 void S21Matrix::SubMatrix(const S21Matrix& other) {
-  if(!CompareIsRight(other))
+  if (!CompareIsRight(other))
     throw std::invalid_argument("SubMatrix: invalid arguments");
 
   for (int i = 0; i < rows_ * cols_; i++) {
@@ -239,19 +239,19 @@ void S21Matrix::SubMatrix(const S21Matrix& other) {
 
 /**
  * @brief Multiplies a matrix by a matrix
- * 
+ *
  * @param[in] num matrix to be multiplied
  */
 void S21Matrix::MulMatrix(const S21Matrix& other) {
-  if(cols_ != other.rows_ || !IsCorrect() || !other.IsCorrect())
+  if (cols_ != other.rows_ || !IsCorrect() || !other.IsCorrect())
     throw std::invalid_argument("MulMatrix: invalid arguments");
 
   S21Matrix result(rows_, other.cols_);
-  
-  for(int i = 0; i < result.rows_; i++) {
-    for(int j = 0; j < result.cols_; j++) {
-      for(int k = 0; k < cols_; k++) {
-        result(i, j) += (*this)(i, k) * other(k, j);  
+
+  for (int i = 0; i < result.rows_; i++) {
+    for (int j = 0; j < result.cols_; j++) {
+      for (int k = 0; k < cols_; k++) {
+        result(i, j) += (*this)(i, k) * other(k, j);
       }
     }
   }
@@ -261,11 +261,11 @@ void S21Matrix::MulMatrix(const S21Matrix& other) {
 
 /**
  * @brief Multiplies a matrix by a number
- * 
+ *
  * @param[in] num number to be multiplied
  */
 void S21Matrix::MulNumber(const double num) {
-  if(!IsCorrect() || std::isinf(num) || std::isnan(num))
+  if (!IsCorrect() || std::isinf(num) || std::isnan(num))
     throw std::invalid_argument("MulNumber: invalid arguments");
 
   for (int i = 0; i < rows_ * cols_; i++) {
@@ -304,7 +304,7 @@ S21Matrix S21Matrix::operator-(const S21Matrix& other) const {
  *
  * @param[in] other matrix to be multiplied
  */
-S21Matrix S21Matrix::operator*(const S21Matrix& other) const { 
+S21Matrix S21Matrix::operator*(const S21Matrix& other) const {
   S21Matrix result(*this);
   result.MulMatrix(other);
 
@@ -316,7 +316,7 @@ S21Matrix S21Matrix::operator*(const S21Matrix& other) const {
  *
  * @param[in] num number to be multiplied
  */
-S21Matrix S21Matrix::operator*(const double num) const { 
+S21Matrix S21Matrix::operator*(const double num) const {
   S21Matrix result(*this);
   result.MulNumber(num);
 

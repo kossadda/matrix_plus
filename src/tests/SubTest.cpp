@@ -11,7 +11,31 @@
 
 #include "./MainTest.h"
 
-TEST(Sub_Matrix, Test_1) {
+TEST(SubMatrixInvalidTest, Test_1) {
+  S21Matrix matrix1(2, 2);
+  double values1[] = {1.0, 2.0, 3.0, 4.0};
+  matrix1.Fill(values1);
+
+  S21Matrix matrix2(1, 2);
+  double values2[] = {5.0, 2.0};
+  matrix2.Fill(values2);
+
+  ASSERT_THROW(matrix1.SubMatrix(matrix2), std::invalid_argument);
+}
+
+TEST(SubMatrixInvalidTest, Test_2) {
+  S21Matrix matrix1(2, 2);
+  double values1[] = {1.0, 2.0, 0.0 / 0.0, 4.0};
+  matrix1.Fill(values1);
+
+  S21Matrix matrix2(2, 2);
+  double values2[] = {5.0, 2.0};
+  matrix2.Fill(values2);
+
+  ASSERT_THROW(matrix1.SubMatrix(matrix2), std::invalid_argument);
+}
+
+TEST(SubMatrixTest, Test_1) {
   S21Matrix matrix1(2, 2);
   double values1[] = {1.0, 2.0, 3.0, 4.0};
   matrix1.Fill(values1);
@@ -28,7 +52,7 @@ TEST(Sub_Matrix, Test_1) {
   EXPECT_TRUE(matrix1 == expected);
 }
 
-TEST(Sub_Matrix, Test_2) {
+TEST(SubMatrixTest, Test_2) {
   S21Matrix matrix1(3, 3);
   double values1[] = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0};
   matrix1.Fill(values1);
@@ -46,10 +70,11 @@ TEST(Sub_Matrix, Test_2) {
   expected.Fill(expected_values);
 
   matrix1 = matrix1 - matrix2;
-  EXPECT_TRUE(matrix1.EqMatrix(expected)) << Print(matrix1, 0) << Print(expected, 1);
+  EXPECT_TRUE(matrix1.EqMatrix(expected))
+      << Print(matrix1, 0) << Print(expected, 1);
 }
 
-TEST(Sub_Matrix, Test_3) {
+TEST(SubMatrixTest, Test_3) {
   S21Matrix matrix1(2, 2);
   double values1[] = {1.7357, 5234.32456745, 3455.2358258, -457387.2345};
   matrix1.Fill(values1);
@@ -64,10 +89,11 @@ TEST(Sub_Matrix, Test_3) {
   expected.Fill(expected_values);
 
   matrix1.SubMatrix(matrix2);
-  EXPECT_TRUE(!(matrix1 != expected)) << Print(matrix1, 0) << Print(expected, 1);
+  EXPECT_TRUE(!(matrix1 != expected))
+      << Print(matrix1, 0) << Print(expected, 1);
 }
 
-TEST(Sub_Matrix, Test_4) {
+TEST(SubMatrixTest, Test_4) {
   S21Matrix matrix1(1, 5);
   double values1[] = {1.7357, 5234.32456745, 3455.2358258, -457387.2345,
                       4.543543};
@@ -86,7 +112,7 @@ TEST(Sub_Matrix, Test_4) {
   EXPECT_TRUE(matrix1 == expected) << Print(matrix1, 0) << Print(expected, 1);
 }
 
-TEST(Sub_Matrix, Test_5) {
+TEST(SubMatrixTest, Test_5) {
   S21Matrix matrix1(7, 1);
   double values1[] = {6534.6534645,     -6453.654654,    345345.6765,
                       65434234.4234234, 1.1111111111111, -7.77777777,
@@ -108,7 +134,7 @@ TEST(Sub_Matrix, Test_5) {
   EXPECT_TRUE(matrix1 == expected) << Print(matrix1, 0) << Print(expected, 1);
 }
 
-TEST(Sub_Matrix, Test_6) {
+TEST(SubMatrixTest, Test_6) {
   S21Matrix matrix1(11, 2);
   double values1[] = {1.7357,
                       5234.32456745,
@@ -175,7 +201,7 @@ TEST(Sub_Matrix, Test_6) {
   EXPECT_TRUE(matrix1 == expected) << Print(matrix1, 0) << Print(expected, 1);
 }
 
-TEST(Sub_Matrix, Test_7) {
+TEST(SubMatrixTest, Test_7) {
   S21Matrix matrix1(2, 2);
   double values1[] = {1.7357, 5234.32456745, 3455.2358258, -457387.2345};
   matrix1.Fill(values1);
@@ -193,7 +219,7 @@ TEST(Sub_Matrix, Test_7) {
   EXPECT_TRUE(matrix1 == expected) << Print(matrix1, 0) << Print(expected, 1);
 }
 
-TEST(Sub_Matrix, Test_8) {
+TEST(SubMatrixTest, Test_8) {
   S21Matrix matrix1(3, 4);
   double values1[] = {6534.6534645,      -6453.654654,    345345.6765,
                       65434234.4234234,  1.1111111111111, -7.77777777,
@@ -217,7 +243,7 @@ TEST(Sub_Matrix, Test_8) {
   EXPECT_TRUE(matrix1 == expected) << Print(matrix1, 0) << Print(expected, 1);
 }
 
-TEST(Sub_Matrix, Test_9) {
+TEST(SubMatrixTest, Test_9) {
   S21Matrix matrix1(9, 3);
   double values1[] = {6534.6534645,
                       -6453.654654,
@@ -312,7 +338,7 @@ TEST(Sub_Matrix, Test_9) {
   EXPECT_TRUE(matrix1 == expected) << Print(matrix1, 0) << Print(expected, 1);
 }
 
-TEST(Sub_Matrix, Test_10) {
+TEST(SubMatrixTest, Test_10) {
   S21Matrix matrix1(8, 4);
   double values1[] = {1.7357,
                       5234.32456745,
