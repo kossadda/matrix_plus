@@ -12,9 +12,6 @@
 #ifndef MATRIX_H
 #define MATRIX_H
 
-#define DEFAULT 3
-#define PRECISION 1.0e-6
-
 #include <algorithm>
 #include <cmath>
 #include <iostream>
@@ -29,7 +26,7 @@ class S21Matrix {
   void Remove();
   double Recursive();
   S21Matrix Minor(int row, int col);
-  enum Status { NO, YES };
+  enum Status { NO, YES, DEFAULT = 3 };
 
  public:
   S21Matrix(int rows, int cols);
@@ -39,8 +36,7 @@ class S21Matrix {
   ~S21Matrix();
   void Fill(const double* values);
   void Print() const;
-  int GetRows() const { return rows_; };
-  int GetCols() const { return cols_; };
+  void Resize(int rows, int cols);
   bool EqMatrix(const S21Matrix& other) const;
   void SumMatrix(const S21Matrix& other);
   void SubMatrix(const S21Matrix& other);
@@ -62,6 +58,8 @@ class S21Matrix {
   double Determinant();
   S21Matrix CalcComplements();
   S21Matrix InverseMatrix();
+  int GetRows() const { return rows_; };
+  int GetCols() const { return cols_; };
 };
 
 #endif  // MATRIX_H

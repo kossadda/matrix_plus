@@ -49,7 +49,7 @@ TEST(SubMatrixTest, Test_1) {
   expected.Fill(expected_values);
 
   matrix1 -= matrix2;
-  EXPECT_TRUE(matrix1 == expected);
+  EXPECT_TRUE(matrix1 == expected) << Print(matrix1, 0) << Print(expected, 1);
 }
 
 TEST(SubMatrixTest, Test_2) {
@@ -70,8 +70,7 @@ TEST(SubMatrixTest, Test_2) {
   expected.Fill(expected_values);
 
   matrix1 = matrix1 - matrix2;
-  EXPECT_TRUE(matrix1.EqMatrix(expected))
-      << Print(matrix1, 0) << Print(expected, 1);
+  EXPECT_TRUE(matrix1 == expected) << Print(matrix1, 0) << Print(expected, 1);
 }
 
 TEST(SubMatrixTest, Test_3) {
@@ -89,8 +88,7 @@ TEST(SubMatrixTest, Test_3) {
   expected.Fill(expected_values);
 
   matrix1.SubMatrix(matrix2);
-  EXPECT_TRUE(!(matrix1 != expected))
-      << Print(matrix1, 0) << Print(expected, 1);
+  EXPECT_FALSE(matrix1 != expected) << Print(matrix1, 0) << Print(expected, 1);
 }
 
 TEST(SubMatrixTest, Test_4) {

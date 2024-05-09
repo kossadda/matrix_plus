@@ -71,6 +71,29 @@ void S21Matrix::Remove() {
 }
 
 /**
+ * @brief Changes the matrix size. Pads with zeros if increased, discards numbers if decreased
+ * 
+ * @param[in] rows number of rows
+ * @param[in] cols number of cols
+ */
+void S21Matrix::Resize(int rows, int cols) {
+  if(rows <= 0 || cols <= 0)
+    throw std::invalid_argument("Resize: invalid matrix size");
+
+  if(rows != rows_ || cols != cols_) {
+    S21Matrix rsz(rows, cols);
+
+    for(int i = 0; i < rows_ && i < rsz.rows_; i++) {
+      for(int j = 0; j < cols_ && j < rsz.cols_; j++) {
+        rsz.matrix_[i * rsz.cols_ + j] = matrix_[i * cols_ + j];
+      }
+    }
+
+    *this = std::move(rsz);
+  }
+}
+
+/**
  * @brief Helper method. Checks the validity of the matrix
  *
  * @retval NO (false) - if wrong size or matrix contains nan or inf values
@@ -148,7 +171,7 @@ bool S21Matrix::EqMatrix(const S21Matrix& other) const {
 
   if (equal) {
     for (int i = 0; i < rows_ * cols_ && equal; i++) {
-      if (std::abs(matrix_[i] - other.matrix_[i]) > PRECISION) {
+      if (std::abs(matrix_[i] - other.matrix_[i]) > 1.0e-6) {
         equal = NO;
       }
     }
@@ -183,7 +206,7 @@ bool S21Matrix::operator!=(const S21Matrix& other) const {
  * @brief An assignment operator = that replaces the current matrix with the
  * input one
  *
- * @param other assignable matrix
+ * @param[in] other assignable matrix
  */
 void S21Matrix::operator=(const S21Matrix& other) {
   if (this != &other) {
@@ -399,8 +422,8 @@ double S21Matrix::Recursive() {
 /**
  * @brief Helper method. Forms a minor relative to the specified matrix cell
  * 
- * @param row cells row
- * @param col cells col
+ * @param[in] row cells row
+ * @param[in] col cells col
  * @return S21Matrix - matrix minor
  */
 S21Matrix S21Matrix::Minor(int row, int col) {
