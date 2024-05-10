@@ -35,7 +35,6 @@ TEST(SumMatrixInvalidTest, Test_2) {
   ASSERT_THROW(matrix1.SubMatrix(matrix2), std::invalid_argument);
 }
 
-
 TEST(SumMatrixTest, Test_1) {
   S21Matrix matrix1(2, 2);
   double values1[] = {1.0, 2.0, 3.0, 4.0};
@@ -71,18 +70,18 @@ TEST(SumMatrixTest, Test_2) {
 }
 
 TEST(SumMatrixTest, Test_3) {
-  S21Matrix matrix1;
+  S21Matrix matrix1(3, 3);
   double values1[] = {1.7357, 5234.32456745, 3455.2358258, -457387.2345, 1.111,
                       2.222,  3.333,         4.444,        5.555};
   matrix1.Fill(values1);
 
-  S21Matrix matrix2;
+  S21Matrix matrix2(3, 3);
   double values2[] = {4.543543, -1.5432534, 783465.543867453,
                       12.54345, 1.111,      2.222,
                       3.333,    4.444,      5.555};
   matrix2.Fill(values2);
 
-  S21Matrix expected;
+  S21Matrix expected(3, 3);
   double expected_values[] = {6.279243,      5232.78131405, 786920.779693253,
                               -457374.69105, 2.222,         4.444,
                               6.666,         8.888,         11.11};

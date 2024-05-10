@@ -11,6 +11,13 @@
 
 #include "./MainTest.h"
 
+TEST(DefaultConstructorTest, Test_1) {
+  S21Matrix matrix1;
+
+  EXPECT_TRUE(matrix1.GetCols() == 0);
+  EXPECT_TRUE(matrix1.GetRows() == 0);
+}
+
 TEST(MoveConstructorTest, Test_1) {
   S21Matrix matrix1(2, 3);
   double values1[] = {
@@ -84,7 +91,8 @@ TEST(EqualOperatorTest, Test_1) {
 
 TEST(ResizeTest, Test_1) {
   S21Matrix matrix1(4, 4);
-  double values1[] = {1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4};
+  double values1[] = {1, 2, 3, 4, 1, 2, 3, 4, 1, 2,
+                      3, 4, 1, 2, 3, 4, 1, 2, 3, 4};
   matrix1.Fill(values1);
 
   S21Matrix expected(3, 3);

@@ -4,9 +4,9 @@
  * @brief CalcComplements method testing module
  * @version 1.0
  * @date 2024-05-07
- * 
+ *
  * @copyright Copyright (c) 2024
- * 
+ *
  */
 
 #include "./MainTest.h"
@@ -27,11 +27,13 @@ TEST(CalcComplementsInvalidTest, Test_2) {
 
 TEST(CalcComplementsTest, Test_1) {
   S21Matrix matrix1(3, 3);
-  double values1[] = {0.73, -0.19, -0.12, -0.07, 0.72, -0.17, -0.12, -0.15, 0.92};
+  double values1[] = {0.73,  -0.19, -0.12, -0.07, 0.72,
+                      -0.17, -0.12, -0.15, 0.92};
   matrix1.Fill(values1);
 
   S21Matrix expected(3, 3);
-  double expected_values[] = {0.6369, 0.0848, 0.0969, 0.1928, 0.6572, 0.1323, 0.1187, 0.1325, 0.5123};
+  double expected_values[] = {0.6369, 0.0848, 0.0969, 0.1928, 0.6572,
+                              0.1323, 0.1187, 0.1325, 0.5123};
   expected.Fill(expected_values);
 
   matrix1 = matrix1.CalcComplements();
@@ -44,7 +46,7 @@ TEST(CalcComplementsTest, Test_2) {
   matrix1.Fill(values1);
 
   S21Matrix expected(matrix1);
-  
+
   matrix1 = matrix1.CalcComplements();
   EXPECT_TRUE(matrix1 == expected) << Print(matrix1, 0) << Print(expected, 1);
 }

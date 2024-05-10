@@ -12,6 +12,6 @@
 #ifndef S21MATRIX_OOP_H
 #define S21MATRIX_OOP_H
 
-#include "./modules/include/Matrix.h"
+#include "./modules/Matrix.h"
 
 #endif  // S21MATRIX_OOP_H

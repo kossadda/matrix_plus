@@ -17,8 +17,9 @@ int main()
   double values1[] = {1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4};
   matrix1.Fill(values1);
 
-  matrix1.Resize(4, 5);
+  S21Matrix test;
 
-  matrix1.Print();
+  test = std::move(matrix1);
+
   return 0;
 }

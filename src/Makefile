@@ -1,12 +1,12 @@
 ################################################################################
-#  ____       _      _     _____                                  __     ___   #
-# |  _ \     (_)    | |   / ____|                                /_ |   / _ \  #
-# | |_) |_ __ _  ___| | _| |  __  __ _ _ __ ___   ___     __   __ | |  | | | | #
-# |  _ <| '__| |/ __| |/ / | |_ |/ _` | '_ ` _ \ / _ \    \ \ / / | |  | | | | #
-# | |_) | |  | | (__|   <| |__| | (_| | | | | | |  __/     \ V /  | | _| |_| | #
-# |____/|_|  |_|\___|_|\_\\_____|\__,_|_| |_| |_|\___| ____ \_/   |_|(_)\___/  #
-#                                                     |____|                   #
-#                                                                              #
+#                       _        _                       _                     #
+#                      | |      (_)                     | |                    #
+#       _ __ ___   __ _| |_ _ __ ___  __           _ __ | |_   _ ___           #
+#      | '_ ` _ \ / _` | __| '__| \ \/ /          | '_ \| | | | / __|          #
+#      | | | | | | (_| | |_| |  | |>  <   ______  | |_) | | |_| \__ \          #
+#      |_| |_| |_|\__,_|\__|_|  |_/_/\_\ |______| | .__/|_|\__,_|___/          #
+#                                                 | |                          #
+#                                                 |_|                          #
 ################################################################################
 
 
@@ -173,9 +173,6 @@ $(REPORT_DIR):
 clang_check:
 	clang-format -style=Google -n $(ALL_FILES)
 
-cppcheck:
-	$@ $(CPPCHECK) $(MODULES_C) $(MODULES_H)
-
 valgrind: $(TARGET)
 	$@ $(VAL) ./$(TARGET)
 
@@ -183,16 +180,10 @@ valgrind: $(TARGET)
 
 
 #============================= ADDITIONAL TARGETS =============================#
-kek:
-	clear
-	@$(CXX) -Wall -Wextra -pedantic -g -std=c++17 ./debug/Debug.cpp $(MODULES_CPP) -o test
-	@valgrind $(VAL) ./test
-
 clang_fix:
 	clang-format -style=Google -i $(ALL_FILES)
 
 dependencies:
-	sudo apt install cppcheck
 	sudo apt install clang-format
 	sudo apt-get install libgtest-dev
 	sudo apt install doxygen

@@ -26,7 +26,6 @@ class S21Matrix {
   void Remove();
   double Recursive();
   S21Matrix Minor(int row, int col);
-  enum Status { NO, YES, DEFAULT = 3 };
 
  public:
   S21Matrix(int rows, int cols);

@@ -4,9 +4,9 @@
  * @brief Transpose method testing module
  * @version 1.0
  * @date 2024-05-07
- * 
+ *
  * @copyright Copyright (c) 2024
- * 
+ *
  */
 
 #include "./MainTest.h"

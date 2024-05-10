@@ -9,10 +9,13 @@
  *
  */
 
-#include "./include/Matrix.h"
+#include "./Matrix.h"
 
 /// @brief Default constructor (creates a 3x3 matrix)
-S21Matrix::S21Matrix() : rows_(DEFAULT), cols_(DEFAULT), matrix_(Alloc()) {}
+S21Matrix::S21Matrix() : rows_(0), cols_(0), matrix_(nullptr) {}
+
+/// @brief Destructor
+S21Matrix::~S21Matrix() { Remove(); }
 
 /**
  * @brief Parameterized constructor
@@ -22,9 +25,6 @@ S21Matrix::S21Matrix() : rows_(DEFAULT), cols_(DEFAULT), matrix_(Alloc()) {}
  */
 S21Matrix::S21Matrix(int rows, int cols)
     : rows_(rows), cols_(cols), matrix_(Alloc()) {}
-
-/// @brief Destructor
-S21Matrix::~S21Matrix() { Remove(); }
 
 /**
  * @brief Copy constructor
@@ -48,7 +48,8 @@ S21Matrix::S21Matrix(S21Matrix&& other)
   other.matrix_ = nullptr;
 }
 
-/// @brief Helper method. Allocates memory for a matrix with the current fields rows_ and cols_
+/// @brief Helper method. Allocates memory for a matrix with the current fields
+/// rows_ and cols_
 double* S21Matrix::Alloc() {
   if (rows_ <= 0 || cols_ <= 0)
     throw std::invalid_argument("Constructor: invalid matrix size");
@@ -71,20 +72,21 @@ void S21Matrix::Remove() {
 }
 
 /**
- * @brief Changes the matrix size. Pads with zeros if increased, discards numbers if decreased
- * 
+ * @brief Changes the matrix size. Pads with zeros if increased, discards
+ * numbers if decreased
+ *
  * @param[in] rows number of rows
  * @param[in] cols number of cols
  */
 void S21Matrix::Resize(int rows, int cols) {
-  if(rows <= 0 || cols <= 0)
+  if (rows <= 0 || cols <= 0)
     throw std::invalid_argument("Resize: invalid matrix size");
 
-  if(rows != rows_ || cols != cols_) {
+  if (rows != rows_ || cols != cols_) {
     S21Matrix rsz(rows, cols);
 
-    for(int i = 0; i < rows_ && i < rsz.rows_; i++) {
-      for(int j = 0; j < cols_ && j < rsz.cols_; j++) {
+    for (int i = 0; i < rows_ && i < rsz.rows_; i++) {
+      for (int j = 0; j < cols_ && j < rsz.cols_; j++) {
         rsz.matrix_[i * rsz.cols_ + j] = matrix_[i * cols_ + j];
       }
     }
@@ -96,17 +98,15 @@ void S21Matrix::Resize(int rows, int cols) {
 /**
  * @brief Helper method. Checks the validity of the matrix
  *
- * @retval NO (false) - if wrong size or matrix contains nan or inf values
- * @retval YES (true) - correct matrix
+ * @retval false - if wrong size or matrix contains nan or inf values
+ * @retval true - correct matrix
  */
 bool S21Matrix::IsCorrect() const {
-  bool correct = YES;
+  bool correct = true;
 
-  if (correct) {
-    for (int i = 0; i < rows_ * cols_; ++i) {
-      if (std::isnan(matrix_[i]) || std::isinf(matrix_[i])) {
-        correct = NO;
-      }
+  for (int i = 0; i < rows_ * cols_; ++i) {
+    if (std::isnan(matrix_[i]) || std::isinf(matrix_[i])) {
+      correct = false;
     }
   }
 
@@ -117,14 +117,14 @@ bool S21Matrix::IsCorrect() const {
  * @brief Helper method. Compare size and valid of both matrix
  *
  * @param[in] other second matrix
- * @retval YES (true) - correct matrix
- * @retval NO (false) - if different size or contains nan or inf
+ * @retval true - correct matrix
+ * @retval false - if different size or contains nan or inf
  */
 bool S21Matrix::CompareIsRight(const S21Matrix& other) const {
   return (rows_ != other.rows_ || cols_ != other.cols_ || !IsCorrect() ||
           !other.IsCorrect())
-             ? NO
-             : YES;
+             ? false
+             : true;
 }
 
 /**
@@ -172,7 +172,7 @@ bool S21Matrix::EqMatrix(const S21Matrix& other) const {
   if (equal) {
     for (int i = 0; i < rows_ * cols_ && equal; i++) {
       if (std::abs(matrix_[i] - other.matrix_[i]) > 1.0e-6) {
-        equal = NO;
+        equal = false;
       }
     }
   }
@@ -227,9 +227,8 @@ void S21Matrix::SumMatrix(const S21Matrix& other) {
   if (!CompareIsRight(other))
     throw std::invalid_argument("SumMatrix: invalid arguments");
 
-  for (int i = 0; i < rows_ * cols_; i++) {
-    matrix_[i] += other.matrix_[i];
-  }
+  std::transform(matrix_, matrix_ + rows_ * cols_, other.matrix_, matrix_,
+                 std::plus<double>());
 }
 
 /**
@@ -241,9 +240,8 @@ void S21Matrix::SubMatrix(const S21Matrix& other) {
   if (!CompareIsRight(other))
     throw std::invalid_argument("SubMatrix: invalid arguments");
 
-  for (int i = 0; i < rows_ * cols_; i++) {
-    matrix_[i] -= other.matrix_[i];
-  }
+  std::transform(matrix_, matrix_ + rows_ * cols_, other.matrix_, matrix_,
+                 std::minus<double>());
 }
 
 /**
@@ -260,7 +258,8 @@ void S21Matrix::MulMatrix(const S21Matrix& other) {
   for (int i = 0; i < res.rows_; i++) {
     for (int j = 0; j < res.cols_; j++) {
       for (int k = 0; k < cols_; k++) {
-        res.matrix_[i * res.cols_ + j] += matrix_[i * cols_ + k] * other.matrix_[k * other.cols_ + j];
+        res.matrix_[i * res.cols_ + j] +=
+            matrix_[i * cols_ + k] * other.matrix_[k * other.cols_ + j];
       }
     }
   }
@@ -277,9 +276,8 @@ void S21Matrix::MulNumber(const double num) {
   if (!IsCorrect() || std::isinf(num) || std::isnan(num))
     throw std::invalid_argument("MulNumber: invalid arguments");
 
-  for (int i = 0; i < rows_ * cols_; i++) {
-    matrix_[i] *= num;
-  }
+  std::for_each(matrix_, matrix_ + rows_ * cols_,
+                [num](double& element) { element *= num; });
 }
 
 /**
@@ -362,17 +360,16 @@ void S21Matrix::operator*=(const double num) { MulNumber(num); }
 
 /**
  * @brief Creates a transposed matrix
- * 
+ *
  * @return S21Matrix - transposed matrix
  */
 S21Matrix S21Matrix::Transpose() {
-  if(!IsCorrect())
-    throw std::invalid_argument("Transpose: invalid argument");
+  if (!IsCorrect()) throw std::invalid_argument("Transpose: invalid argument");
 
   S21Matrix tr(cols_, rows_);
 
-  for(int i = 0; i < rows_; i++) {
-    for(int j = 0; j < cols_; j++) {
+  for (int i = 0; i < rows_; i++) {
+    for (int j = 0; j < cols_; j++) {
       tr.matrix_[j * tr.cols_ + i] = matrix_[i * cols_ + j];
     }
   }
@@ -382,16 +379,16 @@ S21Matrix S21Matrix::Transpose() {
 
 /**
  * @brief Computes and returns the determinant of a matrix
- * 
+ *
  * @return double - determinant of a matrix
  */
 double S21Matrix::Determinant() {
-  double determinant;
-
-  if(rows_ != cols_ || !IsCorrect())
+  if (rows_ != cols_ || !IsCorrect())
     throw std::invalid_argument("Determinant: invalid argument");
 
-  if(rows_ == 1 && cols_ == 1)
+  double determinant;
+
+  if (rows_ == 1 && cols_ == 1)
     determinant = *matrix_;
   else
     determinant = Recursive();
@@ -400,15 +397,16 @@ double S21Matrix::Determinant() {
 }
 
 /**
- * @brief Helper method. Recursive loop for determining determinants of all minors
- * 
+ * @brief Helper method. Recursive loop for determining determinants of all
+ * minors
+ *
  * @return double - determinant of minor
  */
 double S21Matrix::Recursive() {
   double minor_determ = 0;
 
-  if(cols_ != 2) {
-    for(int j = 0; j < cols_; j++) {
+  if (cols_ != 2) {
+    for (int j = 0; j < cols_; j++) {
       S21Matrix minor(Minor(0, j));
       minor_determ += std::pow(-1, j) * matrix_[j] * minor.Recursive();
     }
@@ -421,7 +419,7 @@ double S21Matrix::Recursive() {
 
 /**
  * @brief Helper method. Forms a minor relative to the specified matrix cell
- * 
+ *
  * @param[in] row cells row
  * @param[in] col cells col
  * @return S21Matrix - matrix minor
@@ -429,12 +427,12 @@ double S21Matrix::Recursive() {
 S21Matrix S21Matrix::Minor(int row, int col) {
   S21Matrix minor(rows_ - 1, cols_ - 1);
 
-  for(int i = 0, m = 0; i < rows_; i++) {
-    if(i == row) continue;
+  for (int i = 0, m = 0; i < rows_; i++) {
+    if (i == row) continue;
 
-    for(int j = 0, n = 0; j < cols_; j++) {
-      if(j == col) continue;
-      
+    for (int j = 0, n = 0; j < cols_; j++) {
+      if (j == col) continue;
+
       minor.matrix_[m * minor.cols_ + n] = matrix_[i * cols_ + j];
       n++;
     }
@@ -447,20 +445,19 @@ S21Matrix S21Matrix::Minor(int row, int col) {
 
 /**
  * @brief Computes the algebraic complement matrix of a matrix and returns i
- * 
+ *
  * @return S21Matrix - algebraic complement matrix
  */
 S21Matrix S21Matrix::CalcComplements() {
-  if(rows_ != cols_ || !IsCorrect())
+  if (rows_ != cols_ || !IsCorrect())
     throw std::invalid_argument("CalcComplements: invalid argument");
 
-  if(rows_ == 1)
-    return *this;
+  if (rows_ == 1) return *this;
 
   S21Matrix res(rows_, cols_);
-  
-  for(int i = 0; i < rows_; i++) {
-    for(int j = 0; j < cols_; j++) {
+
+  for (int i = 0; i < rows_; i++) {
+    for (int j = 0; j < cols_; j++) {
       S21Matrix tmp(Minor(i, j));
       res.matrix_[i * res.cols_ + j] = tmp.Determinant() * std::pow(-1, i + j);
     }
@@ -471,15 +468,15 @@ S21Matrix S21Matrix::CalcComplements() {
 
 /**
  * @brief Calculates and returns the inverse matrix
- * 
+ *
  * @return S21Matrix - inverse matrix
  */
 S21Matrix S21Matrix::InverseMatrix() {
-  if(rows_ != cols_ || !IsCorrect())
+  if (rows_ != cols_ || !IsCorrect())
     throw std::invalid_argument("InverseMatrix: invalid argument");
 
-  if(rows_ == 1) {
-    if(*matrix_) {
+  if (rows_ == 1) {
+    if (*matrix_) {
       S21Matrix copy(*this);
       *copy.matrix_ = 1 / *matrix_;
       return copy;
@@ -490,7 +487,7 @@ S21Matrix S21Matrix::InverseMatrix() {
 
   double determ = Determinant();
 
-  if(!determ)
+  if (!determ)
     throw std::invalid_argument("InverseMatrix: matrix determinant equals 0");
 
   return CalcComplements().Transpose() * (1.0 / determ);

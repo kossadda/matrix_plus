@@ -12,7 +12,7 @@
 #include "./MainTest.h"
 
 TEST(MulNumberInvalidTest, Test_1) {
-  S21Matrix matrix1;
+  S21Matrix matrix1(3, 3);
   double values1[] = {1, 2, 3, 4, 5, 6, 7, 8, 9};
   matrix1.Fill(values1);
 
@@ -22,7 +22,7 @@ TEST(MulNumberInvalidTest, Test_1) {
 }
 
 TEST(MulNumberInvalidTest, Test_2) {
-  S21Matrix matrix1;
+  S21Matrix matrix1(3, 3);
   double values1[] = {1, 2, 3, 4, 5, 6, 7, 8, 9};
   matrix1.Fill(values1);
 
@@ -32,7 +32,7 @@ TEST(MulNumberInvalidTest, Test_2) {
 }
 
 TEST(MulNumberInvalidTest, Test_3) {
-  S21Matrix matrix1;
+  S21Matrix matrix1(3, 3);
   double values1[] = {1, 2, 3, 4, 5, 6, 7, 1.0 / 0.0, 9};
   matrix1.Fill(values1);
 
@@ -83,13 +83,13 @@ TEST(MulNumberTest, Test_1) {
 }
 
 TEST(MulNumberTest, Test_2) {
-  S21Matrix matrix1;
+  S21Matrix matrix1(3, 3);
   double values1[] = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0};
   matrix1.Fill(values1);
 
   double num = 12.312;
 
-  S21Matrix expected;
+  S21Matrix expected(3, 3);
   double expected_values[] = {12.312, 24.624, 36.936, 49.248, 61.56,
                               73.872, 86.184, 98.496, 110.808};
   expected.Fill(expected_values);
@@ -100,7 +100,7 @@ TEST(MulNumberTest, Test_2) {
 }
 
 TEST(MulNumberTest, Test_3) {
-  S21Matrix matrix1;
+  S21Matrix matrix1(3, 3);
   double values1[] = {345.6765, 654.4234234, 1.1111111111111,
                       2.71828,  3.14159,     -1.61803,
                       1.41421,  0.57721,     -1.5432534};
@@ -108,7 +108,7 @@ TEST(MulNumberTest, Test_3) {
 
   double num = 914.555;
 
-  S21Matrix expected;
+  S21Matrix expected(3, 3);
   double expected_values[] = {
       316140.1714575, 598506.213987587, 1016.1722222222120605,
       2486.0165654,   2873.15684245,    -1479.77742665,
