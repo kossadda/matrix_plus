@@ -1,108 +1,98 @@
 # s21_matrix+
 
-Реализация библиотеки s21_matrix_oop.h
+Implementation of the s21_matrix_oop.h library.
 
-## Information
+The English version of the README can be found in the repository.
 
-### C++ и C
+## Contents
+1. [Project description](#project-description)
+2. [Building project](#building-project)
+3. [Feedback](#feedback)
 
-C++ - язык программирования, разработанный на базе языка C для реализации программ с применением объектно-ориентированного подхода. Это означает, что общие правила синтаксиса языка C++ напрямую унаследованы из C, и, следовательно, большая часть кода, написанного на языке C, может быть скопирована в текст программы на C++ и успешно скомпилирована. По большей части, C++ лишь добавляет новые возможности для программиста или несколько изменяет их, нежели что-то отнимает, поэтому, говоря о C++, легче говорить о различиях (см. материалы), чем о сходствах. 
+<br>
 
-### Пример класса матрицы на C++
+## [Project description](#s21_matrix)
 
-```cpp
-class S21Matrix {
-    private:
-        // Attributes
-        int rows_, cols_;         // Rows and columns
-        double **matrix_;         // Pointer to the memory where the matrix is allocated
+The goal of this project is to implement a class in the C++ programming language that simulates full-fledged work with matrices.
+Below is a brief description of the operations on matrices that were implemented in the developed library.
 
-    public:
-        S21Matrix();              // Default constructor
-        ~S21Matrix();             // Destructor
+| Operation                                | Description                                                                 | Exceptional situations                                                                 |
+| ---------------------------------------- | --------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
+| `bool EqMatrix(const S21Matrix& other)`  | Checks matrices for equality with each other.                               |                                                                                        |
+| `void SumMatrix(const S21Matrix& other)` | Adds the second matrix to the current one.                                  | Different matrix dimensions.                                                           |
+| `void SubMatrix(const S21Matrix& other)` | Subtracts another matrix from the current one.                              | Different matrix dimensions.                                                           |
+| `void MulNumber(const double num)`       | Multiplies the current matrix by a number.                                  |                                                                                        |
+| `void MulMatrix(const S21Matrix& other)` | Multiplies the current matrix by the second matrix.                         | The number of columns of the first matrix is not equal to the number of second matrix. |
+| `S21Matrix Transpose()`                  | Ceates a new transposed matrix from the current one and returns it.         |                                                                                        |
+| `S21Matrix CalcComplements()`            | Calculates the algebraic addition matrix of the current one and returns it. | The matrix is not square.                                                              |
+| `double Determinant()`                   | Calculates and returns the determinant of the current matrix.               | The matrix is not square.                                                              |
+| `S21Matrix InverseMatrix()`              | Calculates and returns the inverse matrix.                                  | Matrix determinant is 0.                                                               |
 
-        void SumMatrix(const S21Matrix& other); 
-        // Other methods..
-}
-```
+In addition to implementing these operations, constructors and destructors are implemented:
 
-### Напоминание основных положений о матрице
+| Method                              | Description                                                                 |
+| ----------------------------------- | --------------------------------------------------------------------------- |
+| `S21Matrix()`                       | A basic constructor that initialises a matrix of some predefined dimension. |  
+| `S21Matrix(int rows, int cols)`     | Parametrized constructor with number of rows and columns.                   | 
+| `S21Matrix(const S21Matrix& other)` | Copy constructor.                                                           |
+| `S21Matrix(S21Matrix&& other)`      | Move constructor.                                                           |
+| `~S21Matrix()`                      | Destructor.                                                                 |
 
-Матрица - прямоугольная таблица чисел, расположенных в m строках и n столбцах:
+The following operators are also overloaded, partially corresponding to the operations above:
 
-```
-    1 2 3
-A = 4 5 6
-    7 8 9
-```
+| Operator          | Description                                                  | Exceptional situations                                                                            |
+| ----------------- | ------------------------------------------------------------ | ------------------------------------------------------------------------------------------------- |
+| `+`               | Addition of two matrices.                                    | Different matrix dimensions.                                                                      |
+| `-`               | Subtraction of one matrix from another.                      | Different matrix dimensions.                                                                      |
+| `*`               | Matrix multiplication and matrix multiplication by a number. | The number of columns of the first matrix is not equal to the number of second matrix.            |
+| `==`              | Checks for matrices equality (`EqMatrix`).                   |                                                                                                   |
+| `=`               | Assignment of values from one matrix to another one.         |                                                                                                   |
+| `+=`              | Addition assignment (`SumMatrix`).                           | Different matrix dimensions.                                                                      |
+| `-=`              | Difference assignment (`SubMatrix`).                         | Different matrix dimensions.                                                                      |
+| `*=`              | Multiplication assignment (`MulMatrix`/`MulNumber`).         | The number of columns of the first matrix does not equal the number of rows of the second matrix. |
+| `(int i, int j)`  | Indexation by matrix elements (row, column).                 | Index is outside the matrix.                                                                      |
 
-```
-     1  2  3  4
-В =  5  6  7  8
-     9 10 11 12
-```
+- The program was developed in C++ language standard C++17 using the gcc compiler;
+- The program code is located in the src folder;
+- Code formatting is made in accordance with Google Style;
+- The matrix is implemented as the class `S21Matrix`;
+- Only private fields `matrix_`, `rows_` and `cols_` are stored;
+- Access to private fields `rows_` and `cols_` is implemented through accessor and mutator. When the size increases, the matrix is supplemented with zero elements; when decreased, the excess is simply discarded;
+- The solution is designed as a static library (with a header file s21_matrix_oop.h);
+- Prepared full coverage of library functions with unit tests using the GTest library;
+- A Makefile is provided for building the library and tests (with goals all, clean, test, s21_matrix_oop.a).
 
-Получить нужный элемент можно при помощи индексов, так
-A[1,1] = 1, где первый индекс - номер строки, второй - номер столбца.
+## [Building project](#s21_matrix)
 
-Порядок матрицы — это число ее строк или столбцов. \
-Главная диагональ квадратной матрицы — это диагональ, идущая из левого верхнего в правый нижний угол. \
-Прямоугольная матрица (В) — это матрица, у которой число строк не равно числу столбцов. \
-Квадратная матрица (А) — это матрица у которой число строк равно числу столбцов.
+The following main targets for working with the project have been added to the Makefile:
 
-### Операции над матрицами
+| #  | Target             | Target description                                                           |
+|----| ------------------ | ---------------------------------------------------------------------------- |
+| 1  | `all`              | Builds the project and generates project documentation.                      |
+| 2  | `s21_matrix_oop`   | Builds modules into a static library.                                        |
+| 3  | `test`             | Performs module testing.                                                     |
+| 4  | `gcov_report`      | Performs module testing and generates a coverage report in `html` format.    |
+| 5  | `dvi`              | Generates documentation in `html` and `manual` format for the functionality. |
+| 6  | `clean`            | Cleans the repository of generated files.                                    |
+| 7  | `rebuild`          | Rebuilds the project.                                                        |
+| 8  | `clang_check`      | Testing modules for compliance with `Google style`.                          |
+| 9  | `valgrind`         | Testing modules for working with memory using `Valgrind`.                    |
+| 10 | `dependencies`     | Installs the necessary dependencies for building and testing the project.    |
 
-Ниже представлено краткое описание операций над матрицами, которые необходимо реализовать в разрабатываемой библиотеке. Они похожи на операции выполненные тобой ранее в блоке «Структурного Программирования», и более подробное описание каждой из них можно посмотреть там. Обрати внимание, что некоторые операции имеют исключительные ситуации, требующие специальной обработки с использованием механизма исключений. 
+<br>
 
-| Операция    | Описание   | Исключительные ситуации |
-| ----------- | ----------- | ----------- |
-| `bool EqMatrix(const S21Matrix& other)` | Проверяет матрицы на равенство между собой. |  |
-| `void SumMatrix(const S21Matrix& other)` | Прибавляет вторую матрицы к текущей | различная размерность матриц. |
-| `void SubMatrix(const S21Matrix& other)` | Вычитает из текущей матрицы другую | различная размерность матриц. |
-| `void MulNumber(const double num)` | Умножает текущую матрицу на число. |  |
-| `void MulMatrix(const S21Matrix& other)` | Умножает текущую матрицу на вторую. | число столбцов первой матрицы не равно числу строк второй матрицы. |
-| `S21Matrix Transpose()` | Создает новую транспонированную матрицу из текущей и возвращает ее. |  |
-| `S21Matrix CalcComplements()` | Вычисляет матрицу алгебраических дополнений текущей матрицы и возвращает ее. | Матрица не является квадратной. |
-| `double Determinant()` | Вычисляет и возвращает определитель текущей матрицы. | Матрица не является квадратной. |
-| `S21Matrix InverseMatrix()` | Вычисляет и возвращает обратную матрицу. | Определитель матрицы равен 0. |
+## [Feedback](#s21_matrix)
 
-Помимо реализации данных операций, необходимо также реализовать конструкторы и деструкторы:
+If you have any questions regarding the features or other aspects of the project that interest you, please contact <br>
 
-| Метод    | Описание   |
-| ----------- | ----------- |
-| `S21Matrix()` | Базовый конструктор, инициализирующий матрицу некоторой заранее заданной размерностью. |  
-| `S21Matrix(int rows, int cols)` | Параметризированный конструктор с количеством строк и столбцов. | 
-| `S21Matrix(const S21Matrix& other)` | Конструктор копирования. |
-| `S21Matrix(S21Matrix&& other)` | Конструктор переноса. |
-| `~S21Matrix()` | Деструктор. |
+|          |                       |
+| ---------| --------------------- |
+| mail     | gabilov1997@gmail.com |
+| telegram | @kossadda             |
+| vk       | vk.com/kossadda       |
 
-А также нужно перегрузить следующие операторы, частично соответствующие операциям выше:
+Thank you for your attention. I hope you enjoy this project and find it useful.
 
-| Оператор    | Описание   | Исключительные ситуации |
-| ----------- | ----------- | ----------- |
-| `+`      | Сложение двух матриц.  | Различная размерность матриц. |
-| `-`   | Вычитание одной матрицы из другой. | Различная размерность матриц. |
-| `*`  | Умножение матриц и умножение матрицы на число. | Число столбцов первой матрицы не равно числу строк второй матрицы. |
-| `==`  | Проверка на равенство матриц (`EqMatrix`). | |
-| `=`  | Присвоение матрице значений другой матрицы. | |
-| `+=`  | Присвоение сложения (`SumMatrix`).   | Различная размерность матриц. |
-| `-=`  | Присвоение разности (`SubMatrix`). | Различная размерность матриц. |
-| `*=`  | Присвоение умножения (`MulMatrix`/`MulNumber`). | Число столбцов первой матрицы не равно числу строк второй матрицы. |
-| `(int i, int j)`  | Индексация по элементам матрицы (строка, колонка). | Индекс за пределами матрицы. |
+<br>
 
-
-## Chapter III
-
-## Part 1. Реализация функции библиотеки s21_matrix_oop.h
-
-- Программа должна быть разработана на языке C++ стандарта C++17 с использованием компилятора gcc;
-- Код программы должен находиться в папке src;
-- При написании кода необходимо придерживаться Google Style;
-- Реализуй матрицу в виде класса `S21Matrix`;
-- Храни только приватные поля `matrix_`, `rows_` и `cols_`;
-- Реализуй доступ к приватным полям `rows_` и `cols_` через accessor и mutator. При увеличении размера матрица дополняется нулевыми элементами, при уменьшении - лишнее просто отбрасывается;
-- Оформи решение как статическую библиотеку (с заголовочным файлом s21_matrix_oop.h);
-- Реализуй операции, описанные [выше](#операции-над-матрицами)
-- Перегрузи операторы в соответствии с таблицой в разделе [выше](#операции-над-матрицами).
-- Подготовь полное покрытие unit-тестами функций библиотеки c помощью библиотеки GTest;
-- Предусмотри Makefile для сборки библиотеки и тестов (с целями all, clean, test, s21_matrix_oop.a).
+[К оглавлению](#s21_matrix)
