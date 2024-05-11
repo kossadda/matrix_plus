@@ -71,21 +71,33 @@ void S21Matrix::Remove() {
   cols_ = 0;
 }
 
-/**
- * @brief Changes the matrix size. Pads with zeros if increased, discards
- * numbers if decreased
- *
- * @param[in] rows number of rows
- * @param[in] cols number of cols
- */
-void S21Matrix::Resize(int rows, int cols) {
-  if (rows <= 0 || cols <= 0)
-    throw std::invalid_argument("Resize: invalid matrix size");
+/// @brief Changes the matrix rows. Pads with zeros if increased, discards
+/// numbers if decreased
+void S21Matrix::SetRows(int rows) {
+  if (rows <= 0) throw std::invalid_argument("SetRows: invalid matrix size");
 
-  if (rows != rows_ || cols != cols_) {
-    S21Matrix rsz(rows, cols);
+  if (rows != rows_) {
+    S21Matrix rsz(rows, cols_);
 
     for (int i = 0; i < rows_ && i < rsz.rows_; i++) {
+      for (int j = 0; j < cols_; j++) {
+        rsz.matrix_[i * rsz.cols_ + j] = matrix_[i * cols_ + j];
+      }
+    }
+
+    *this = std::move(rsz);
+  }
+}
+
+/// @brief Changes the matrix cols. Pads with zeros if increased, discards
+/// numbers if decreased
+void S21Matrix::SetCols(int cols) {
+  if (cols <= 0) throw std::invalid_argument("SetCols: invalid matrix size");
+
+  if (cols != cols_) {
+    S21Matrix rsz(rows_, cols);
+
+    for (int i = 0; i < rows_; i++) {
       for (int j = 0; j < cols_ && j < rsz.cols_; j++) {
         rsz.matrix_[i * rsz.cols_ + j] = matrix_[i * cols_ + j];
       }
@@ -153,7 +165,7 @@ void S21Matrix::Print() const {
  * @return double - array element
  */
 double& S21Matrix::operator()(int row, int col) {
-  if (row >= rows_ || col >= cols_)
+  if (row >= rows_ || col >= cols_ || row < 0 || col < 0)
     throw std::out_of_range("Index out of range");
 
   return matrix_[row * cols_ + col];

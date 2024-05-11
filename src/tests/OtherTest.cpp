@@ -89,52 +89,90 @@ TEST(EqualOperatorTest, Test_1) {
   matrix = matrix;
 }
 
-TEST(ResizeTest, Test_1) {
+TEST(SetColsTest, Test_1) {
   S21Matrix matrix1(4, 4);
   double values1[] = {1, 2, 3, 4, 1, 2, 3, 4, 1, 2,
                       3, 4, 1, 2, 3, 4, 1, 2, 3, 4};
   matrix1.Fill(values1);
 
-  S21Matrix expected(3, 3);
-  double expected_values[] = {1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3};
+  S21Matrix expected(4, 3);
+  double expected_values[] = {1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3};
   expected.Fill(expected_values);
 
-  matrix1.Resize(3, 3);
+  matrix1.SetCols(3);
   EXPECT_TRUE(matrix1 == expected) << Print(matrix1, 0) << Print(expected, 1);
 }
 
-TEST(ResizeTest, Test_2) {
+TEST(SetColsTest, Test_2) {
   S21Matrix matrix1(3, 3);
   double values1[] = {1, 2, 3, 1, 2, 3, 1, 2, 3};
   matrix1.Fill(values1);
 
-  S21Matrix expected(4, 4);
-  double expected_values[] = {1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 0, 0, 0, 0};
+  S21Matrix expected(3, 4);
+  double expected_values[] = {1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0};
   expected.Fill(expected_values);
 
-  matrix1.Resize(4, 4);
+  matrix1.SetCols(4);
   EXPECT_TRUE(matrix1 == expected) << Print(matrix1, 0) << Print(expected, 1);
 }
 
-TEST(ResizeTest, Test_3) {
+TEST(SetColsTest, Test_3) {
   S21Matrix matrix1(3, 3);
   double values1[] = {1, 2, 3, 1, 2, 3, 1, 2, 3};
   matrix1.Fill(values1);
 
   S21Matrix expected(matrix1);
 
-  matrix1.Resize(3, 3);
+  matrix1.SetCols(3);
   EXPECT_TRUE(matrix1 == expected) << Print(matrix1, 0) << Print(expected, 1);
 }
 
-TEST(ResizeTest, Test_4) {
+TEST(SetColsTest, Test_4) {
   S21Matrix matrix1(3, 3);
 
-  ASSERT_THROW(matrix1.Resize(4, 0), std::invalid_argument);
+  ASSERT_THROW(matrix1.SetCols(0), std::invalid_argument);
 }
 
-TEST(ResizeTest, Test_5) {
+TEST(SetRowsTest, Test_1) {
+  S21Matrix matrix1(4, 4);
+  double values1[] = {1, 2, 3, 4, 1, 2, 3, 4, 1, 2,
+                      3, 4, 1, 2, 3, 4, 1, 2, 3, 4};
+  matrix1.Fill(values1);
+
+  S21Matrix expected(3, 4);
+  double expected_values[] = {1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4};
+  expected.Fill(expected_values);
+
+  matrix1.SetRows(3);
+  EXPECT_TRUE(matrix1 == expected) << Print(matrix1, 0) << Print(expected, 1);
+}
+
+TEST(SetRowsTest, Test_2) {
+  S21Matrix matrix1(3, 3);
+  double values1[] = {1, 2, 3, 1, 2, 3, 1, 2, 3};
+  matrix1.Fill(values1);
+
+  S21Matrix expected(4, 3);
+  double expected_values[] = {1, 2, 3, 1, 2, 3, 1, 2, 3, 0, 0, 0};
+  expected.Fill(expected_values);
+
+  matrix1.SetRows(4);
+  EXPECT_TRUE(matrix1 == expected) << Print(matrix1, 0) << Print(expected, 1);
+}
+
+TEST(SetRowsTest, Test_3) {
+  S21Matrix matrix1(3, 3);
+  double values1[] = {1, 2, 3, 1, 2, 3, 1, 2, 3};
+  matrix1.Fill(values1);
+
+  S21Matrix expected(matrix1);
+
+  matrix1.SetRows(3);
+  EXPECT_TRUE(matrix1 == expected) << Print(matrix1, 0) << Print(expected, 1);
+}
+
+TEST(SetRowsTest, Test_4) {
   S21Matrix matrix1(3, 3);
 
-  ASSERT_THROW(matrix1.Resize(0, 2), std::invalid_argument);
+  ASSERT_THROW(matrix1.SetRows(0), std::invalid_argument);
 }

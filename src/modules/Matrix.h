@@ -35,7 +35,6 @@ class S21Matrix {
   ~S21Matrix();
   void Fill(const double* values);
   void Print() const;
-  void Resize(int rows, int cols);
   bool EqMatrix(const S21Matrix& other) const;
   void SumMatrix(const S21Matrix& other);
   void SubMatrix(const S21Matrix& other);
@@ -59,6 +58,8 @@ class S21Matrix {
   S21Matrix InverseMatrix();
   int GetRows() const { return rows_; };
   int GetCols() const { return cols_; };
+  void SetRows(int rows);
+  void SetCols(int cols);
 };
 
 #endif  // MATRIX_H
